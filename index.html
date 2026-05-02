@@ -316,7 +316,7 @@
 
 <script>
 // ========== 核心数据管理 ==========
-var STORAGE_KEY = 'monthly_bank_data_v2';  // ⚠️ 注意：改用新 key 避免旧数据缓存问题
+var STORAGE_KEY = 'monthly_bank_data_v3';  // 新版本 key
 var data = { banks: [], bills: [] };
 var nextBankId = 1;
 var nextBillId = 1;
@@ -387,7 +387,19 @@ function loadData() {
       data = { banks: [], bills: [] }; 
     }
   } else {
-    console.log('⚠️ 没有找到存储数据');
+    console.log('⚠️ 没有找到存储数据，尝试从旧版本迁移...');
+    // 尝试从旧版本迁移数据
+    var oldData = localStorage.getItem('monthly_bank_data_v2') || localStorage.getItem('monthly_bank_data');
+    if (oldData) {
+      try {
+        data = JSON.parse(oldData);
+        if (!data.banks) data.banks = [];
+        if (!data.bills) data.bills = [];
+        console.log('✅ 从旧版本迁移成功');
+      } catch(e) {
+        data = { banks: [], bills: [] };
+      }
+    }
   }
   
   nextBankId = 1;
@@ -399,7 +411,7 @@ function loadData() {
     if (data.bills[i].id >= nextBillId) nextBillId = data.bills[i].id + 1; 
   }
   
-  var savedExpanded = localStorage.getItem('expandedBanks_v2');
+  var savedExpanded = localStorage.getItem('expandedBanks_v3') || localStorage.getItem('expandedBanks_v2') || localStorage.getItem('expandedBanks');
   if (savedExpanded) {
     try { expandedBanks = JSON.parse(savedExpanded); }
     catch(e) { expandedBanks = {}; }
@@ -410,11 +422,10 @@ function loadData() {
 
 function saveData() { 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  console.log('💾 数据已保存:', data.bills.length, '条账单');
 }
 
 function saveExpandedState() {
-  localStorage.setItem('expandedBanks_v2', JSON.stringify(expandedBanks));
+  localStorage.setItem('expandedBanks_v3', JSON.stringify(expandedBanks));
 }
 
 // ========== Toast 提示 ==========
@@ -574,7 +585,7 @@ billSaveBtn.onclick = function() {
   closeBillForm(); showToast('已保存'); render();
 };
 
-// ========== 汇总统计（修复版） ==========
+// ========== 汇总统计 ==========
 function updateSummary() {
   var unpaidTotal = 0, paidTotal = 0, unpaidCount = 0, paidCount = 0;
   
@@ -590,8 +601,6 @@ function updateSummary() {
       paidCount++;
     }
   }
-  
-  console.log('📊 统计结果: 未缴', unpaidCount, '笔, RM', unpaidTotal.toFixed(2), '| 已缴', paidCount, '笔, RM', paidTotal.toFixed(2));
   
   document.getElementById('unpaidAmount').textContent = 'RM ' + unpaidTotal.toFixed(2);
   document.getElementById('unpaidCount').textContent = unpaidCount;
@@ -615,28 +624,24 @@ function render() {
     updateSummary(); 
     return;
   }
-  
-  var now = new Date();
-  var currentMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
 
   for (var bi = 0; bi < data.banks.length; bi++) {
     var bank = data.banks[bi];
 
-    var bankBills = [], bankMonthBills = [];
+    // ====== 修复：统计该银行所有账单 ======
+    var bankBills = [];
+    var bankTotal = 0, bankPaidCount = 0, bankUnpaidCount = 0;
+    
     for (var j = 0; j < data.bills.length; j++) {
       if (data.bills[j].bankId === bank.id) { 
-        bankBills.push(data.bills[j]); 
-        if (data.bills[j].date && data.bills[j].date.indexOf(currentMonth) === 0) { 
-          bankMonthBills.push(data.bills[j]); 
-        } 
+        bankBills.push(data.bills[j]);
+        bankTotal += parseFloat(data.bills[j].amount) || 0;
+        if (data.bills[j].status === 'paid') {
+          bankPaidCount++;
+        } else {
+          bankUnpaidCount++;
+        }
       }
-    }
-    
-    var bankTotal = 0, bankPaidCount = 0, bankUnpaidCount = 0;
-    for (var k = 0; k < bankMonthBills.length; k++) {
-      bankTotal += parseFloat(bankMonthBills[k].amount) || 0;
-      if (bankMonthBills[k].status === 'paid') bankPaidCount++; 
-      else bankUnpaidCount++;
     }
 
     var isExpanded = expandedBanks[bank.id] || false;
@@ -645,11 +650,12 @@ function render() {
     el.dataset.bankId = bank.id;
     el.draggable = false;
 
+    // 显示该银行的已缴/未缴统计
     var statusStatsHtml = '';
-    if (bankMonthBills.length > 0) {
+    if (bankBills.length > 0) {
       statusStatsHtml = '<span class="stat-paid">' + bankPaidCount + ' 已缴</span><span class="stat-unpaid">' + bankUnpaidCount + ' 未缴</span>';
     } else {
-      statusStatsHtml = '<span style="font-size:0.68rem;opacity:0.4;">本月暂无</span>';
+      statusStatsHtml = '<span style="font-size:0.68rem;opacity:0.4;">暂无账单</span>';
     }
 
     var billsHtml = '';
@@ -1224,55 +1230,27 @@ window.addEventListener('beforeinstallprompt', (e) => {
 installBtn.addEventListener('click', async () => {
   if (deferredPrompt) {
     deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
+    await deferredPrompt.userChoice;
     deferredPrompt = null;
     installBtn.style.display = 'none';
   }
-});
-window.addEventListener('appinstalled', () => {
-  deferredPrompt = null;
-  installBtn.style.display = 'none';
 });
 
 // ========== Service Worker ==========
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    const swCode = `
-      self.addEventListener('install', event => {
-        event.waitUntil(
-          caches.open('payment-v2').then(cache => cache.addAll(['./', '/index.html']))
-        );
-      });
-      self.addEventListener('fetch', event => {
-        event.respondWith(
-          caches.match(event.request).then(response => response || fetch(event.request))
-        );
-      });
-    `;
-    const blob = new Blob([swCode], { type: 'application/javascript' });
+    var swCode = "self.addEventListener('install',function(e){e.waitUntil(caches.open('p-v3').then(function(c){return c.addAll(['./'])}))});self.addEventListener('fetch',function(e){e.respondWith(caches.match(e.request).then(function(r){return r||fetch(e.request)}))});";
+    var blob = new Blob([swCode], { type: 'application/javascript' });
     navigator.serviceWorker.register(URL.createObjectURL(blob));
   });
 }
 
 // ========== 安装教程 ==========
 function showTutorial() {
-  var browser = 'other';
-  var ua = navigator.userAgent;
-  if (/iPhone|iPad|iPod/.test(ua) || (/Safari/.test(ua) && !/Chrome/.test(ua))) browser = 'safari';
-  else if (/Chrome/.test(ua) && /Android/.test(ua)) browser = 'chrome';
-  
-  var html = '';
-  if (browser === 'safari') {
-    html = '<div style="background:#007aff;color:#fff;padding:4px 10px;border-radius:10px;display:inline-block;font-size:0.75rem;margin-bottom:8px;">🍎 Safari</div>' +
-      '<div style="display:flex;gap:10px;padding:8px 0;"><div style="width:28px;height:28px;background:#2c3e50;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">1</div><div>点击底部 <strong>分享按钮 ⎋</strong></div></div>' +
-      '<div style="display:flex;gap:10px;padding:8px 0;"><div style="width:28px;height:28px;background:#2c3e50;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">2</div><div>滑动找到 <strong>「添加到主屏幕」</strong></div></div>' +
-      '<div style="display:flex;gap:10px;padding:8px 0;"><div style="width:28px;height:28px;background:#2c3e50;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">3</div><div>点击 <strong>「添加」</strong></div></div>';
-  } else {
-    html = '<div style="background:#4285f4;color:#fff;padding:4px 10px;border-radius:10px;display:inline-block;font-size:0.75rem;margin-bottom:8px;">🌐 浏览器</div>' +
-      '<div style="display:flex;gap:10px;padding:8px 0;"><div style="width:28px;height:28px;background:#2c3e50;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">1</div><div>点击菜单 <strong>⋮</strong></div></div>' +
-      '<div style="display:flex;gap:10px;padding:8px 0;"><div style="width:28px;height:28px;background:#2c3e50;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">2</div><div>选择 <strong>「添加到主屏幕」</strong></div></div>' +
-      '<div style="display:flex;gap:10px;padding:8px 0;"><div style="width:28px;height:28px;background:#2c3e50;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">3</div><div>点击 <strong>「安装」</strong></div></div>';
-  }
+  var html = '<div style="background:#4285f4;color:#fff;padding:4px 10px;border-radius:10px;display:inline-block;font-size:0.75rem;margin-bottom:8px;">📱 安装教程</div>' +
+    '<div style="display:flex;gap:10px;padding:8px 0;"><div style="width:28px;height:28px;background:#2c3e50;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">1</div><div>点击菜单 <strong>⋮</strong></div></div>' +
+    '<div style="display:flex;gap:10px;padding:8px 0;"><div style="width:28px;height:28px;background:#2c3e50;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">2</div><div>选择 <strong>「添加到主屏幕」</strong></div></div>' +
+    '<div style="display:flex;gap:10px;padding:8px 0;"><div style="width:28px;height:28px;background:#2c3e50;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">3</div><div>点击 <strong>「安装」</strong></div></div>';
   document.getElementById('tutorialContent').innerHTML = html;
   tutorialOverlay.classList.add('show');
 }
@@ -1280,7 +1258,7 @@ function showTutorial() {
 // ========== 启动 ==========
 loadData();
 render();
-console.log('🚀 应用已启动');
+console.log('🚀 应用已启动 v3 - 银行合计显示所有账单总和（已缴+未缴），已缴/未缴计数分开统计');
 </script>
 
 </body>
