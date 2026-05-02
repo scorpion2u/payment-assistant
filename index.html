@@ -671,8 +671,22 @@ function loadData() {
   for (var i = 0; i < data.banks.length; i++) { if (data.banks[i].id >= nextBankId) nextBankId = data.banks[i].id + 1; }
   nextBillId = 1;
   for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id >= nextBillId) nextBillId = data.bills[i].id + 1; }
+  
+  // 从 localStorage 恢复展开状态
+  var savedExpanded = localStorage.getItem('expandedBanks');
+  if (savedExpanded) {
+    try { expandedBanks = JSON.parse(savedExpanded); }
+    catch(e) { expandedBanks = {}; }
+  } else {
+    expandedBanks = {};
+  }
 }
-function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+function saveData() { 
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); 
+}
+function saveExpandedState() {
+  localStorage.setItem('expandedBanks', JSON.stringify(expandedBanks));
+}
 
 var toastTimer;
 function showToast(msg) {
@@ -730,7 +744,12 @@ bankSaveBtn.onclick = function() {
   var name = bankNameInput.value.trim();
   if (!name) { showToast('请输入银行名称'); return; }
   if (editingBankId) { for (var i = 0; i < data.banks.length; i++) { if (data.banks[i].id === editingBankId) { data.banks[i].name = name; break; } } }
-  else { data.banks.push({ id: nextBankId, name: name }); expandedBanks[nextBankId] = true; nextBankId++; }
+  else { 
+    data.banks.push({ id: nextBankId, name: name }); 
+    expandedBanks[nextBankId] = true; 
+    saveExpandedState(); // 保存展开状态
+    nextBankId++; 
+  }
   saveData(); editingBankId = null; bankNameInput.value = ''; closeBankForm(); showToast('银行已保存'); render();
 };
 
@@ -767,7 +786,7 @@ function render() {
 
   for (var bi = 0; bi < data.banks.length; bi++) {
     var bank = data.banks[bi];
-    if (!(bank.id in expandedBanks)) { expandedBanks[bank.id] = true; }
+    // 注意：这里不再自动设置 expandedBanks[bank.id] = true
 
     var bankBills = [], bankMonthBills = [];
     for (var j = 0; j < data.bills.length; j++) {
@@ -779,7 +798,7 @@ function render() {
       if (bankMonthBills[k].status === 'paid') bankPaidCount++; else bankUnpaidCount++;
     }
 
-    var isExpanded = expandedBanks[bank.id];
+    var isExpanded = expandedBanks[bank.id] || false;
     var el = document.createElement('div');
     el.className = 'bank-group' + (isExpanded ? ' expanded' : '');
 
@@ -821,8 +840,13 @@ function render() {
     '<div class="bank-body"><div class="bank-items">' + billsHtml + '</div></div>';
 
     (function(bankId, bankName) {
-      el.querySelector('.bank-header').onclick = function(e) { if (e.target.closest('.bank-del')) return; expandedBanks[bankId] = !expandedBanks[bankId]; render(); };
-      el.querySelector('.bank-del').onclick = function(e) { e.stopPropagation(); showModal('确定删除「' + bankName + '」及其所有事项吗？', { icon: '🗑️', confirmText: '删除', cancelText: '取消' }).then(function(ok) { if (!ok) return; var nb = [], nbl = []; for (var i = 0; i < data.banks.length; i++) { if (data.banks[i].id !== bankId) nb.push(data.banks[i]); } data.banks = nb; for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].bankId !== bankId) nbl.push(data.bills[i]); } data.bills = nbl; delete expandedBanks[bankId]; saveData(); showToast('已删除'); render(); }); };
+      el.querySelector('.bank-header').onclick = function(e) { 
+        if (e.target.closest('.bank-del')) return; 
+        expandedBanks[bankId] = !expandedBanks[bankId]; 
+        saveExpandedState(); // 保存展开状态
+        render(); 
+      };
+      el.querySelector('.bank-del').onclick = function(e) { e.stopPropagation(); showModal('确定删除「' + bankName + '」及其所有事项吗？', { icon: '🗑️', confirmText: '删除', cancelText: '取消' }).then(function(ok) { if (!ok) return; var nb = [], nbl = []; for (var i = 0; i < data.banks.length; i++) { if (data.banks[i].id !== bankId) nb.push(data.banks[i]); } data.banks = nb; for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].bankId !== bankId) nbl.push(data.bills[i]); } data.bills = nbl; delete expandedBanks[bankId]; saveExpandedState(); saveData(); showToast('已删除'); render(); }); };
       el.querySelector('.add-bill-btn').onclick = function() { editingBillId = null; billNameInput.value = ''; billAmountInput.value = ''; setStatusValue('unpaid'); openBillForm(bankId); };
       var tgl = el.querySelectorAll('.toggle-paid'); for (var t = 0; t < tgl.length; t++) { tgl[t].onclick = function(e) { e.stopPropagation(); var bid = parseInt(this.dataset.billId); for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id === bid) { data.bills[i].status = data.bills[i].status === 'paid' ? 'unpaid' : 'paid'; break; } } saveData(); render(); }; }
       var edt = el.querySelectorAll('.edit-bill'); for (var e2 = 0; e2 < edt.length; e2++) { edt[e2].onclick = function(e) { e.stopPropagation(); var bid = parseInt(this.dataset.billId); var bl = null; for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id === bid) { bl = data.bills[i]; break; } } if (!bl) return; editingBillId = bid; billNameInput.value = bl.name; billAmountInput.value = bl.amount; setStatusValue(bl.status || 'unpaid'); openBillForm(bl.bankId); }; }
@@ -858,7 +882,7 @@ document.getElementById('clearAllBtn').onclick = function() {
   showModal('确定清空所有数据吗？', { icon: '⚠️', confirmText: '清空', cancelText: '取消' }).then(function(ok) {
     if (!ok) return;
     data = { banks: [], bills: [] }; expandedBanks = {}; nextBankId = 1; nextBillId = 1;
-    saveData(); showToast('已清空'); render();
+    saveExpandedState(); saveData(); showToast('已清空'); render();
   });
 };
 
@@ -888,7 +912,7 @@ importFile.onchange = function(e) {
         data = nd; expandedBanks = {}; nextBankId = 1; nextBillId = 1;
         for (var i = 0; i < data.banks.length; i++) { if (data.banks[i].id >= nextBankId) nextBankId = data.banks[i].id + 1; expandedBanks[data.banks[i].id] = true; }
         for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id >= nextBillId) nextBillId = data.bills[i].id + 1; }
-        saveData(); showToast('导入成功'); importFile.value = ''; render();
+        saveExpandedState(); saveData(); showToast('导入成功'); importFile.value = ''; render();
       });
     } catch(err) { showToast('导入失败'); importFile.value = ''; }
   };
@@ -905,8 +929,8 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
+// 初始化：加载数据并渲染
 loadData();
-for (var i = 0; i < data.banks.length; i++) { if (!(data.banks[i].id in expandedBanks)) expandedBanks[data.banks[i].id] = true; }
 render();
 </script>
 
