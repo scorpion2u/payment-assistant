@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <title>每月缴款</title>
   
-  <!-- PWA 内嵌 Manifest -->
   <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIuavj+aciOe8tOasviIsCiAgInNob3J0X25hbWUiOiAi57y05qy+IiwKICAic3RhcnRfdXJsIjogIi4vIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZDJkOGU0IiwKICAidGhlbWVfY29sb3IiOiAiIzJjM2U1MCIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImh0dHBzOi8vc2NvcnBpb24ydS5naXRodWIuaW8vcGF5bWVudC1hc3Npc3RhbnQvaWNvbi0xOTIucG5nIiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9LAogICAgewogICAgICAic3JjIjogImh0dHBzOi8vc2NvcnBpb24ydS5naXRodWIuaW8vcGF5bWVudC1hc3Npc3RhbnQvaWNvbi01MTIucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9CiAgXQp9">
 
   <meta name="theme-color" content="#2c3e50">
@@ -54,23 +53,13 @@
       box-shadow:8px 8px 16px rgba(0,0,0,0.1),-6px -6px 14px rgba(255,255,255,0.9);overflow:hidden;
       transition: opacity 0.2s, transform 0.2s;
     }
-    .bank-group.dragging {
-      opacity: 0.6;
-    }
-    .bank-group.drag-over {
-      box-shadow: 0 0 0 3px #2c3e50, 8px 8px 16px rgba(0,0,0,0.15);
-    }
+    .bank-group.dragging {opacity: 0.6;}
+    .bank-group.drag-over {box-shadow: 0 0 0 3px #2c3e50, 8px 8px 16px rgba(0,0,0,0.15);}
     .bank-handle {
-      cursor: grab;
-      font-size: 1.2rem;
-      opacity: 0.4;
-      padding: 0 4px;
-      user-select: none;
-      touch-action: none;
+      cursor: grab;font-size: 1.2rem;opacity: 0.4;padding: 0 4px;
+      user-select: none;touch-action: none;
     }
-    .bank-handle:active {
-      cursor: grabbing;
-    }
+    .bank-handle:active {cursor: grabbing;}
     .bank-header{display:flex;align-items:flex-start;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;gap:8px;}
     .bank-header-main{display:flex;align-items:center;gap:8px;flex:1;min-width:0;}
     .bank-icon{font-size:1.4rem;flex-shrink:0;}
@@ -94,24 +83,13 @@
       transition: opacity 0.2s, transform 0.2s;
     }
     .bill-item.overdue{background:linear-gradient(145deg,#fce4e4,#f5d0d0);}
-    .bill-item.dragging {
-      opacity: 0.5;
-    }
-    .bill-item.drag-over {
-      box-shadow: 0 0 0 2px #2c3e50, inset 2px 2px 4px rgba(0,0,0,0.06), inset -2px -2px 4px rgba(255,255,255,0.5);
-    }
+    .bill-item.dragging {opacity: 0.5;}
+    .bill-item.drag-over {box-shadow: 0 0 0 2px #2c3e50, inset 2px 2px 4px rgba(0,0,0,0.06), inset -2px -2px 4px rgba(255,255,255,0.5);}
     .bill-handle {
-      cursor: grab;
-      font-size: 1rem;
-      opacity: 0.35;
-      padding: 0 2px;
-      user-select: none;
-      flex-shrink: 0;
-      touch-action: none;
+      cursor: grab;font-size: 1rem;opacity: 0.35;padding: 0 2px;
+      user-select: none;flex-shrink: 0;touch-action: none;
     }
-    .bill-handle:active {
-      cursor: grabbing;
-    }
+    .bill-handle:active {cursor: grabbing;}
     .bill-info{display:flex;flex-direction:column;gap:1px;flex:1;min-width:0;}
     .bill-name{font-weight:700;font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .bill-amount{font-size:1rem;font-weight:800;}
@@ -209,140 +187,38 @@
       pointer-events:none;z-index:400;
     }
     .toast.show{opacity:1;}
-
-    /* ===== 菜单弹窗样式 ===== */
     .menu-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 350;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s;
+      position: fixed;inset: 0;background: rgba(0,0,0,0.3);
+      display: flex;align-items: center;justify-content: center;z-index: 350;
+      opacity: 0;pointer-events: none;transition: opacity 0.3s;
     }
-    .menu-overlay.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
+    .menu-overlay.show {opacity: 1;pointer-events: auto;}
     .menu-popup {
-      border-radius: 28px;
-      padding: 24px 20px 20px;
+      border-radius: 28px;padding: 24px 20px 20px;
       background: linear-gradient(145deg, #e8edf3, #d2d8e4);
       box-shadow: 20px 20px 40px rgba(0,0,0,0.2), -12px -12px 30px rgba(255,255,255,0.9);
-      max-width: 320px;
-      width: 90%;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      transform: scale(0.9);
-      transition: transform 0.3s;
+      max-width: 320px;width: 90%;display: flex;flex-direction: column;gap: 12px;
+      transform: scale(0.9);transition: transform 0.3s;
     }
-    .menu-overlay.show .menu-popup {
-      transform: scale(1);
-    }
+    .menu-overlay.show .menu-popup {transform: scale(1);}
     .menu-popup .btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 14px 18px;
-      font-size: 0.95rem;
-      border-radius: 18px;
+      display: flex;align-items: center;justify-content: center;gap: 8px;
+      padding: 14px 18px;font-size: 0.95rem;border-radius: 18px;
     }
-    .menu-popup .btn.install-menu-btn {
-      background: linear-gradient(145deg, #2c3e50, #1a252f);
-      color: #fff;
-      box-shadow: 6px 6px 12px rgba(0,0,0,0.2), -4px -4px 10px rgba(255,255,255,0.6);
-    }
-    .menu-popup .btn.install-menu-btn:active {
-      box-shadow: inset 4px 4px 8px rgba(0,0,0,0.3), inset -4px -4px 8px rgba(255,255,255,0.4);
-    }
-    .menu-popup .btn.tutorial-btn {
-      background: linear-gradient(145deg, #fef3c7, #fde68a);
-      color: #92400e;
-      box-shadow: 6px 6px 12px rgba(0,0,0,0.1), -4px -4px 10px rgba(255,255,255,0.6);
-    }
-
-    /* ===== 教程弹窗样式 ===== */
     .tutorial-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 400;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s;
+      position: fixed;inset: 0;background: rgba(0,0,0,0.4);
+      display: flex;align-items: center;justify-content: center;z-index: 400;
+      opacity: 0;pointer-events: none;transition: opacity 0.3s;
     }
-    .tutorial-overlay.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
+    .tutorial-overlay.show {opacity: 1;pointer-events: auto;}
     .tutorial-popup {
-      border-radius: 28px;
-      padding: 24px 20px 20px;
+      border-radius: 28px;padding: 24px 20px 20px;
       background: linear-gradient(145deg, #e8edf3, #d2d8e4);
       box-shadow: 20px 20px 40px rgba(0,0,0,0.2), -12px -12px 30px rgba(255,255,255,0.9);
-      max-width: 380px;
-      width: 90%;
-      max-height: 80vh;
-      overflow-y: auto;
-      text-align: left;
-      transform: scale(0.9);
-      transition: transform 0.3s;
+      max-width: 380px;width: 90%;max-height: 80vh;overflow-y: auto;
+      text-align: left;transform: scale(0.9);transition: transform 0.3s;
     }
-    .tutorial-overlay.show .tutorial-popup {
-      transform: scale(1);
-    }
-    .tutorial-step {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(0,0,0,0.05);
-    }
-    .tutorial-step:last-child {
-      border-bottom: none;
-    }
-    .step-number {
-      width: 32px;
-      height: 32px;
-      background: #2c3e50;
-      color: #fff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 0.85rem;
-      flex-shrink: 0;
-    }
-    .step-content {
-      flex: 1;
-      font-size: 0.9rem;
-      color: #333;
-      line-height: 1.5;
-    }
-    .step-content strong {
-      color: #2c3e50;
-    }
-    .browser-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 10px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-    .browser-badge.safari { background: #007aff; color: #fff; }
-    .browser-badge.chrome { background: #4285f4; color: #fff; }
-    .browser-badge.samsung { background: #1428a0; color: #fff; }
-    .browser-badge.other { background: #666; color: #fff; }
+    .tutorial-overlay.show .tutorial-popup {transform: scale(1);}
   </style>
 </head>
 <body>
@@ -371,7 +247,6 @@
 
   <div id="list" class="list"></div>
 
-  <!-- 菜单弹窗（独立浮出） -->
   <div class="menu-overlay" id="menuOverlay">
     <div class="menu-popup">
       <button class="btn install-menu-btn" id="installAppBtn" style="display:none;">📱 安装应用</button>
@@ -384,7 +259,6 @@
   </div>
   <input type="file" id="importFile" accept=".json" style="display:none;">
 
-  <!-- 安装教程弹窗 -->
   <div class="tutorial-overlay" id="tutorialOverlay">
     <div class="tutorial-popup">
       <div class="form-title" style="margin-bottom:12px;">📖 如何安装到主屏幕</div>
@@ -395,8 +269,8 @@
 
   <div class="form-overlay" id="bankFormOverlay">
     <div class="form-panel">
-      <div class="form-title" id="bankFormTitle">添加银行/服务机构/自动扣款...等等</div>
-      <input id="bankNameInput" placeholder="银行名称/服务机构/自动扣款...等等（必填）">
+      <div class="form-title">添加银行/服务机构/自动扣款...等等</div>
+      <input id="bankNameInput" placeholder="银行名称（必填）">
       <div class="row-buttons">
         <button id="bankSaveBtn" class="btn">保存</button>
         <button id="bankCancelBtn" class="btn">取消</button>
@@ -406,7 +280,7 @@
 
   <div class="form-overlay" id="billFormOverlay">
     <div class="form-panel">
-      <div class="form-title" id="billFormTitle">新增缴款</div>
+      <div class="form-title">新增缴款</div>
       <input id="billNameInput" placeholder="费用名称（必填）">
       <input id="billAmountInput" type="number" placeholder="金额（必填）" step="0.01" min="0">
       <div class="custom-select-wrapper" id="statusSelectWrapper">
@@ -441,225 +315,8 @@
 </div>
 
 <script>
-// ========== 检测浏览器类型 ==========
-function detectBrowser() {
-  const ua = navigator.userAgent;
-  if (/iPhone|iPad|iPod/.test(ua)) return 'ios';
-  if (/Safari/.test(ua) && !/Chrome/.test(ua) && !/Android/.test(ua)) return 'safari';
-  if (/Chrome/.test(ua) && /Android/.test(ua)) return 'android-chrome';
-  if (/SamsungBrowser/.test(ua)) return 'samsung';
-  if (/Edg/.test(ua)) return 'edge';
-  if (/Firefox/.test(ua)) return 'firefox';
-  return 'other';
-}
-
-// ========== 生成安装教程 ==========
-function showTutorial() {
-  const browser = detectBrowser();
-  let tutorialHTML = '';
-  
-  if (browser === 'ios' || browser === 'safari') {
-    tutorialHTML = `
-      <div class="browser-badge safari">🍎 Safari 浏览器</div>
-      <div class="tutorial-step">
-        <div class="step-number">1</div>
-        <div class="step-content">点击浏览器底部中间的 <strong>分享按钮</strong>（<span style="font-size:1.1rem;">⎋</span> 图标）</div>
-      </div>
-      <div class="tutorial-step">
-        <div class="step-number">2</div>
-        <div class="step-content">在弹出菜单中向下滑动，找到 <strong>「添加到主屏幕」</strong></div>
-      </div>
-      <div class="tutorial-step">
-        <div class="step-number">3</div>
-        <div class="step-content">点击右上角 <strong>「添加」</strong>，应用图标就会出现在主屏幕上</div>
-      </div>
-    `;
-  } else if (browser === 'android-chrome') {
-    tutorialHTML = `
-      <div class="browser-badge chrome">🌐 Chrome 浏览器</div>
-      <div class="tutorial-step">
-        <div class="step-number">1</div>
-        <div class="step-content">点击浏览器右上角的 <strong>三个点菜单 ⋮</strong></div>
-      </div>
-      <div class="tutorial-step">
-        <div class="step-number">2</div>
-        <div class="step-content">选择 <strong>「添加到主屏幕」</strong> 或 <strong>「安装应用」</strong></div>
-      </div>
-      <div class="tutorial-step">
-        <div class="step-number">3</div>
-        <div class="step-content">在弹出的对话框中点击 <strong>「安装」</strong>，应用就会出现在主屏幕上</div>
-      </div>
-    `;
-  } else if (browser === 'samsung') {
-    tutorialHTML = `
-      <div class="browser-badge samsung">📱 三星浏览器</div>
-      <div class="tutorial-step">
-        <div class="step-number">1</div>
-        <div class="step-content">点击底部导航栏的 <strong>三条横线菜单 ☰</strong></div>
-      </div>
-      <div class="tutorial-step">
-        <div class="step-number">2</div>
-        <div class="step-content">选择 <strong>「添加页面到」→「主屏幕」</strong></div>
-      </div>
-      <div class="tutorial-step">
-        <div class="step-number">3</div>
-        <div class="step-content">确认添加后，应用图标就会出现在主屏幕上</div>
-      </div>
-    `;
-  } else if (browser === 'edge') {
-    tutorialHTML = `
-      <div class="browser-badge other">🔵 Edge 浏览器</div>
-      <div class="tutorial-step">
-        <div class="step-number">1</div>
-        <div class="step-content">点击底部菜单栏的 <strong>三个点 ⋯</strong></div>
-      </div>
-      <div class="tutorial-step">
-        <div class="step-number">2</div>
-        <div class="step-content">选择 <strong>「添加到手机」</strong> 或 <strong>「添加到主屏幕」</strong></div>
-      </div>
-      <div class="tutorial-step">
-        <div class="step-number">3</div>
-        <div class="step-content">确认后应用图标就会出现在主屏幕上</div>
-      </div>
-    `;
-  } else {
-    tutorialHTML = `
-      <div class="browser-badge other">🌐 通用教程</div>
-      <div class="tutorial-step">
-        <div class="step-number">1</div>
-        <div class="step-content">打开浏览器菜单（通常在右上角或底部）</div>
-      </div>
-      <div class="tutorial-step">
-        <div class="step-number">2</div>
-        <div class="step-content">找到 <strong>「添加到主屏幕」</strong> 或 <strong>「安装」</strong> 选项</div>
-      </div>
-      <div class="tutorial-step">
-        <div class="step-number">3</div>
-        <div class="step-content">如果找不到，可以尝试使用 <strong>Chrome 或 Safari</strong> 浏览器打开</div>
-      </div>
-    `;
-  }
-
-  document.getElementById('tutorialContent').innerHTML = tutorialHTML;
-  document.getElementById('tutorialOverlay').classList.add('show');
-}
-
-// ========== 注册 Service Worker ==========
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    const swCode = `
-      self.addEventListener('install', event => {
-        event.waitUntil(
-          caches.open('payment-assistant-v1').then(cache => {
-            return cache.addAll([
-              './',
-              '/index.html',
-              '/icon-192.png',
-              '/icon-512.png'
-            ]);
-          })
-        );
-      });
-
-      self.addEventListener('fetch', event => {
-        event.respondWith(
-          caches.match(event.request).then(response => {
-            return response || fetch(event.request);
-          })
-        );
-      });
-    `;
-    const blob = new Blob([swCode], { type: 'application/javascript' });
-    const swUrl = URL.createObjectURL(blob);
-    navigator.serviceWorker.register(swUrl)
-      .then(registration => {
-        console.log('Service Worker 注册成功:', registration.scope);
-      })
-      .catch(error => {
-        console.log('Service Worker 注册失败:', error);
-      });
-  });
-}
-
-// ========== PWA 安装提示 ==========
-let deferredPrompt;
-const installBtn = document.getElementById('installAppBtn');
-
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  installBtn.style.display = 'flex';
-});
-
-installBtn.addEventListener('click', async () => {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log(`用户安装响应: ${outcome}`);
-    deferredPrompt = null;
-    installBtn.style.display = 'none';
-  }
-});
-
-window.addEventListener('appinstalled', () => {
-  console.log('应用已安装');
-  deferredPrompt = null;
-  installBtn.style.display = 'none';
-});
-
-// ========== 菜单弹窗控制 ==========
-var menuOverlay = document.getElementById('menuOverlay');
-var menuBtn = document.getElementById('menuBtn');
-var menuCloseBtn = document.getElementById('menuCloseBtn');
-
-menuBtn.onclick = function(e) {
-  e.stopPropagation();
-  menuOverlay.classList.add('show');
-};
-
-menuCloseBtn.onclick = function() {
-  menuOverlay.classList.remove('show');
-};
-
-menuOverlay.addEventListener('click', function(e) {
-  if (e.target === menuOverlay) {
-    menuOverlay.classList.remove('show');
-  }
-});
-
-// ========== 教程弹窗控制 ==========
-var tutorialOverlay = document.getElementById('tutorialOverlay');
-var tutorialBtn = document.getElementById('tutorialBtn');
-var tutorialCloseBtn = document.getElementById('tutorialCloseBtn');
-
-tutorialBtn.onclick = function() {
-  menuOverlay.classList.remove('show');
-  showTutorial();
-};
-
-tutorialCloseBtn.onclick = function() {
-  tutorialOverlay.classList.remove('show');
-};
-
-tutorialOverlay.addEventListener('click', function(e) {
-  if (e.target === tutorialOverlay) {
-    tutorialOverlay.classList.remove('show');
-  }
-});
-
-// 菜单内按钮点击后自动关闭弹窗
-document.getElementById('exportBtn').onclick = function() {
-  menuOverlay.classList.remove('show');
-};
-document.getElementById('importBtn').onclick = function() {
-  menuOverlay.classList.remove('show');
-};
-document.getElementById('clearAllBtn').onclick = function() {
-  menuOverlay.classList.remove('show');
-};
-
-// ========== 应用核心逻辑 ==========
-var STORAGE_KEY = 'monthly_bank_data';
+// ========== 核心数据管理 ==========
+var STORAGE_KEY = 'monthly_bank_data_v2';  // ⚠️ 注意：改用新 key 避免旧数据缓存问题
 var data = { banks: [], bills: [] };
 var nextBankId = 1;
 var nextBillId = 1;
@@ -670,12 +327,22 @@ var currentBankId = null;
 var expandedBanks = {};
 
 // ========== 拖拽相关变量 ==========
-var draggedItem = null;        // 被拖拽的 DOM 元素
-var draggedItemType = null;   // 'bank' 或 'bill'
-var draggedItemId = null;     // bank.id 或 bill.id
-var draggedItemBankId = null; // 仅当拖拽 bill 时使用
-var dragOverItem = null;      // 当前悬停的 DOM 元素
+var draggedItem = null;
+var draggedItemType = null;
+var draggedItemId = null;
+var draggedItemBankId = null;
+var dragOverItem = null;
+var touchStartY = 0;
+var touchStartX = 0;
+var touchDraggedItem = null;
+var touchDraggedItemType = null;
+var touchDraggedItemId = null;
+var touchDraggedItemBankId = null;
+var touchClone = null;
+var touchStartElement = null;
+var touchHasMoved = false;
 
+// ========== DOM 引用 ==========
 var listEl = document.getElementById('list');
 var toast = document.getElementById('toast');
 var bankFormOverlay = document.getElementById('bankFormOverlay');
@@ -696,19 +363,43 @@ var modalIcon = document.getElementById('modalIcon');
 var modalMessage = document.getElementById('modalMessage');
 var modalCancel = document.getElementById('modalCancel');
 var modalConfirm = document.getElementById('modalConfirm');
+var menuOverlay = document.getElementById('menuOverlay');
+var menuBtn = document.getElementById('menuBtn');
+var menuCloseBtn = document.getElementById('menuCloseBtn');
+var tutorialOverlay = document.getElementById('tutorialOverlay');
+var tutorialBtn = document.getElementById('tutorialBtn');
+var tutorialCloseBtn = document.getElementById('tutorialCloseBtn');
+var installBtn = document.getElementById('installAppBtn');
+var importFile = document.getElementById('importFile');
 
+// ========== 数据持久化 ==========
 function loadData() {
   var saved = localStorage.getItem(STORAGE_KEY);
+  console.log('🔍 加载数据...');
   if (saved) {
-    try { data = JSON.parse(saved); if (!data.banks) data.banks = []; if (!data.bills) data.bills = []; }
-    catch(e) { data = { banks: [], bills: [] }; }
+    try { 
+      data = JSON.parse(saved); 
+      if (!data.banks) data.banks = []; 
+      if (!data.bills) data.bills = []; 
+      console.log('✅ 加载成功:', data.banks.length, '银行,', data.bills.length, '账单');
+    } catch(e) { 
+      console.error('❌ 数据解析失败:', e);
+      data = { banks: [], bills: [] }; 
+    }
+  } else {
+    console.log('⚠️ 没有找到存储数据');
   }
-  nextBankId = 1;
-  for (var i = 0; i < data.banks.length; i++) { if (data.banks[i].id >= nextBankId) nextBankId = data.banks[i].id + 1; }
-  nextBillId = 1;
-  for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id >= nextBillId) nextBillId = data.bills[i].id + 1; }
   
-  var savedExpanded = localStorage.getItem('expandedBanks');
+  nextBankId = 1;
+  for (var i = 0; i < data.banks.length; i++) { 
+    if (data.banks[i].id >= nextBankId) nextBankId = data.banks[i].id + 1; 
+  }
+  nextBillId = 1;
+  for (var i = 0; i < data.bills.length; i++) { 
+    if (data.bills[i].id >= nextBillId) nextBillId = data.bills[i].id + 1; 
+  }
+  
+  var savedExpanded = localStorage.getItem('expandedBanks_v2');
   if (savedExpanded) {
     try { expandedBanks = JSON.parse(savedExpanded); }
     catch(e) { expandedBanks = {}; }
@@ -716,13 +407,17 @@ function loadData() {
     expandedBanks = {};
   }
 }
+
 function saveData() { 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); 
-}
-function saveExpandedState() {
-  localStorage.setItem('expandedBanks', JSON.stringify(expandedBanks));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  console.log('💾 数据已保存:', data.bills.length, '条账单');
 }
 
+function saveExpandedState() {
+  localStorage.setItem('expandedBanks_v2', JSON.stringify(expandedBanks));
+}
+
+// ========== Toast 提示 ==========
 var toastTimer;
 function showToast(msg) {
   toast.textContent = msg; toast.classList.add('show');
@@ -730,6 +425,7 @@ function showToast(msg) {
   toastTimer = setTimeout(function() { toast.classList.remove('show'); }, 1800);
 }
 
+// ========== 模态框 ==========
 var modalResolve = null;
 function showModal(message, options) {
   options = options || {};
@@ -743,53 +439,99 @@ function showModal(message, options) {
     modalOverlay.classList.add('show');
   });
 }
-function hideModal(result) { modalOverlay.classList.remove('show'); if (modalResolve) { modalResolve(result); modalResolve = null; } }
+function hideModal(result) { 
+  modalOverlay.classList.remove('show'); 
+  if (modalResolve) { modalResolve(result); modalResolve = null; } 
+}
 modalConfirm.onclick = function() { hideModal(true); };
 modalCancel.onclick = function() { hideModal(false); };
 modalOverlay.addEventListener('click', function(e) { if (e.target === modalOverlay) hideModal(false); });
 
+// ========== 状态选择器 ==========
 statusSelectDisplay.addEventListener('click', function(e) {
   e.stopPropagation();
   var isOpen = statusSelectDropdown.classList.contains('open');
   var allDd = document.querySelectorAll('.custom-select-dropdown.open');
-  for (var i = 0; i < allDd.length; i++) { allDd[i].classList.remove('open'); if (allDd[i].previousElementSibling) allDd[i].previousElementSibling.classList.remove('open'); }
-  if (!isOpen) { statusSelectDropdown.classList.add('open'); statusSelectDisplay.classList.add('open'); }
-  else { statusSelectDropdown.classList.remove('open'); statusSelectDisplay.classList.remove('open'); }
+  for (var i = 0; i < allDd.length; i++) { 
+    allDd[i].classList.remove('open'); 
+    if (allDd[i].previousElementSibling) allDd[i].previousElementSibling.classList.remove('open'); 
+  }
+  if (!isOpen) { 
+    statusSelectDropdown.classList.add('open'); 
+    statusSelectDisplay.classList.add('open'); 
+  } else { 
+    statusSelectDropdown.classList.remove('open'); 
+    statusSelectDisplay.classList.remove('open'); 
+  }
 });
+
 for (var s = 0; s < statusOptions.length; s++) {
   statusOptions[s].addEventListener('click', function(e) {
     e.stopPropagation();
     for (var i = 0; i < statusOptions.length; i++) statusOptions[i].classList.remove('selected');
-    this.classList.add('selected'); statusSelectText.textContent = this.textContent; currentBillStatus = this.dataset.value;
-    statusSelectDropdown.classList.remove('open'); statusSelectDisplay.classList.remove('open');
+    this.classList.add('selected'); 
+    statusSelectText.textContent = this.textContent; 
+    currentBillStatus = this.dataset.value;
+    statusSelectDropdown.classList.remove('open'); 
+    statusSelectDisplay.classList.remove('open');
   });
 }
-document.addEventListener('click', function() { statusSelectDropdown.classList.remove('open'); statusSelectDisplay.classList.remove('open'); });
+
+document.addEventListener('click', function() { 
+  statusSelectDropdown.classList.remove('open'); 
+  statusSelectDisplay.classList.remove('open'); 
+});
+
 function setStatusValue(value) {
   currentBillStatus = value;
-  for (var i = 0; i < statusOptions.length; i++) { statusOptions[i].classList.remove('selected'); if (statusOptions[i].dataset.value === value) { statusOptions[i].classList.add('selected'); statusSelectText.textContent = statusOptions[i].textContent; } }
+  for (var i = 0; i < statusOptions.length; i++) { 
+    statusOptions[i].classList.remove('selected'); 
+    if (statusOptions[i].dataset.value === value) { 
+      statusOptions[i].classList.add('selected'); 
+      statusSelectText.textContent = statusOptions[i].textContent; 
+    } 
+  }
 }
 
-function openBankForm() { bankFormOverlay.classList.add('show'); setTimeout(function() { bankNameInput.focus(); }, 150); }
-function closeBankForm() { bankFormOverlay.classList.remove('show'); editingBankId = null; }
+// ========== 表单操作 ==========
+function openBankForm() { 
+  bankFormOverlay.classList.add('show'); 
+  setTimeout(function() { bankNameInput.focus(); }, 150); 
+}
+function closeBankForm() { 
+  bankFormOverlay.classList.remove('show'); 
+  editingBankId = null; 
+}
 bankFormOverlay.addEventListener('click', function(e) { if (e.target === bankFormOverlay) closeBankForm(); });
 bankCancelBtn.onclick = closeBankForm;
 
 bankSaveBtn.onclick = function() {
   var name = bankNameInput.value.trim();
   if (!name) { showToast('请输入银行名称'); return; }
-  if (editingBankId) { for (var i = 0; i < data.banks.length; i++) { if (data.banks[i].id === editingBankId) { data.banks[i].name = name; break; } } }
-  else { 
+  if (editingBankId) { 
+    for (var i = 0; i < data.banks.length; i++) { 
+      if (data.banks[i].id === editingBankId) { data.banks[i].name = name; break; } 
+    } 
+  } else { 
     data.banks.push({ id: nextBankId, name: name }); 
     expandedBanks[nextBankId] = true; 
     saveExpandedState();
     nextBankId++; 
   }
-  saveData(); editingBankId = null; bankNameInput.value = ''; closeBankForm(); showToast('银行已保存'); render();
+  saveData(); editingBankId = null; bankNameInput.value = ''; closeBankForm(); 
+  showToast('银行已保存'); render();
 };
 
-function openBillForm(bankId) { currentBankId = bankId; billFormOverlay.classList.add('show'); setTimeout(function() { billNameInput.focus(); }, 150); }
-function closeBillForm() { billFormOverlay.classList.remove('show'); editingBillId = null; currentBankId = null; }
+function openBillForm(bankId) { 
+  currentBankId = bankId; 
+  billFormOverlay.classList.add('show'); 
+  setTimeout(function() { billNameInput.focus(); }, 150); 
+}
+function closeBillForm() { 
+  billFormOverlay.classList.remove('show'); 
+  editingBillId = null; 
+  currentBankId = null; 
+}
 billFormOverlay.addEventListener('click', function(e) { if (e.target === billFormOverlay) closeBillForm(); });
 billCancelBtn.onclick = closeBillForm;
 
@@ -798,423 +540,80 @@ billSaveBtn.onclick = function() {
   var amount = billAmountInput.value;
   if (!name) { showToast('请输入费用名称'); return; }
   if (!amount || parseFloat(amount) < 0) { showToast('请输入有效金额'); return; }
+  
   var finalDate;
-  if (editingBillId) { for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id === editingBillId) { finalDate = data.bills[i].date || ''; break; } } }
-  else { var now = new Date(); finalDate = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0'); }
-  if (editingBillId) { for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id === editingBillId) { data.bills[i].name = name; data.bills[i].amount = parseFloat(amount).toFixed(2); data.bills[i].status = currentBillStatus; data.bills[i].date = finalDate; break; } } }
-  else { data.bills.push({ id: nextBillId, bankId: currentBankId, name: name, amount: parseFloat(amount).toFixed(2), date: finalDate, status: currentBillStatus }); nextBillId++; }
-  saveData(); editingBillId = null; currentBankId = null; billNameInput.value = ''; billAmountInput.value = ''; closeBillForm(); showToast('已保存'); render();
+  if (editingBillId) { 
+    for (var i = 0; i < data.bills.length; i++) { 
+      if (data.bills[i].id === editingBillId) { finalDate = data.bills[i].date || ''; break; } 
+    } 
+  } else { 
+    var now = new Date(); 
+    finalDate = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0'); 
+  }
+  
+  if (editingBillId) { 
+    for (var i = 0; i < data.bills.length; i++) { 
+      if (data.bills[i].id === editingBillId) { 
+        data.bills[i].name = name; 
+        data.bills[i].amount = parseFloat(amount).toFixed(2); 
+        data.bills[i].status = currentBillStatus; 
+        data.bills[i].date = finalDate; 
+        break; 
+      } 
+    } 
+  } else { 
+    data.bills.push({ 
+      id: nextBillId, bankId: currentBankId, name: name, 
+      amount: parseFloat(amount).toFixed(2), date: finalDate, status: currentBillStatus 
+    }); 
+    nextBillId++; 
+  }
+  
+  saveData(); editingBillId = null; currentBankId = null; 
+  billNameInput.value = ''; billAmountInput.value = ''; 
+  closeBillForm(); showToast('已保存'); render();
 };
 
-// ============= 拖拽功能实现 =============
-
-// 银行拖拽处理函数
-function handleBankDragStart(e) {
-  var bankGroup = e.target.closest('.bank-group');
-  if (!bankGroup) return;
+// ========== 汇总统计（修复版） ==========
+function updateSummary() {
+  var unpaidTotal = 0, paidTotal = 0, unpaidCount = 0, paidCount = 0;
   
-  // 判断是否从拖拽手柄发起的
-  var handle = e.target.closest('.bank-handle');
-  if (!handle) {
-    e.preventDefault();
-    return;
-  }
-  
-  e.stopPropagation();
-  draggedItem = bankGroup;
-  draggedItemType = 'bank';
-  draggedItemId = parseInt(bankGroup.dataset.bankId);
-  dragOverItem = null;
-  
-  bankGroup.classList.add('dragging');
-  e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/plain', '');
-  
-  // 设置拖拽图像为透明（可选）
-  var ghost = document.createElement('div');
-  ghost.style.width = '1px';
-  ghost.style.height = '1px';
-  ghost.style.position = 'absolute';
-  ghost.style.top = '-9999px';
-  document.body.appendChild(ghost);
-  e.dataTransfer.setDragImage(ghost, 0, 0);
-  setTimeout(function() { document.body.removeChild(ghost); }, 0);
-}
-
-function handleBankDragOver(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  var bankGroup = e.target.closest('.bank-group');
-  if (!bankGroup || !draggedItem || draggedItemType !== 'bank' || bankGroup === draggedItem) {
-    return;
-  }
-  
-  if (dragOverItem) {
-    dragOverItem.classList.remove('drag-over');
-  }
-  dragOverItem = bankGroup;
-  bankGroup.classList.add('drag-over');
-  e.dataTransfer.dropEffect = 'move';
-}
-
-function handleBankDrop(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  
-  if (!draggedItem || draggedItemType !== 'bank') return;
-  
-  if (dragOverItem) {
-    dragOverItem.classList.remove('drag-over');
-  }
-  draggedItem.classList.remove('dragging');
-  
-  if (!dragOverItem || dragOverItem === draggedItem) {
-    resetDragState();
-    return;
-  }
-  
-  // 获取所有银行组并按 DOM 顺序获取它们的 bankId
-  var bankGroups = listEl.querySelectorAll('.bank-group');
-  var bankOrder = [];
-  for (var i = 0; i < bankGroups.length; i++) {
-    bankOrder.push(parseInt(bankGroups[i].dataset.bankId));
-  }
-  
-  // 在 data.banks 中交换/移动
-  var fromId = draggedItemId;
-  var toId = parseInt(dragOverItem.dataset.bankId);
-  var fromIndex = -1, toIndex = -1;
-  for (var i = 0; i < data.banks.length; i++) {
-    if (data.banks[i].id === fromId) fromIndex = i;
-    if (data.banks[i].id === toId) toIndex = i;
-  }
-  
-  if (fromIndex >= 0 && toIndex >= 0 && fromIndex !== toIndex) {
-    var moved = data.banks.splice(fromIndex, 1)[0];
-    data.banks.splice(toIndex, 0, moved);
-    saveData();
-    showToast('已调整顺序');
-  }
-  
-  resetDragState();
-  render();
-}
-
-// 账单拖拽处理函数
-function handleBillDragStart(e) {
-  var billItem = e.target.closest('.bill-item');
-  if (!billItem) return;
-  
-  // 判断是否从拖拽手柄发起的
-  var handle = e.target.closest('.bill-handle');
-  if (!handle) {
-    e.preventDefault();
-    return;
-  }
-  
-  e.stopPropagation();
-  draggedItem = billItem;
-  draggedItemType = 'bill';
-  draggedItemId = parseInt(billItem.dataset.billId);
-  var bankGroup = billItem.closest('.bank-group');
-  draggedItemBankId = bankGroup ? parseInt(bankGroup.dataset.bankId) : null;
-  dragOverItem = null;
-  
-  billItem.classList.add('dragging');
-  e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/plain', '');
-  
-  var ghost = document.createElement('div');
-  ghost.style.width = '1px';
-  ghost.style.height = '1px';
-  ghost.style.position = 'absolute';
-  ghost.style.top = '-9999px';
-  document.body.appendChild(ghost);
-  e.dataTransfer.setDragImage(ghost, 0, 0);
-  setTimeout(function() { document.body.removeChild(ghost); }, 0);
-}
-
-function handleBillDragOver(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  var billItem = e.target.closest('.bill-item');
-  
-  // 如果拖拽的不是账单，或没有目标，忽略
-  if (!billItem || !draggedItem || draggedItemType !== 'bill' || billItem === draggedItem) {
-    return;
-  }
-  
-  // 确保在同一银行组内
-  var targetBankGroup = billItem.closest('.bank-group');
-  var targetBankId = targetBankGroup ? parseInt(targetBankGroup.dataset.bankId) : null;
-  if (targetBankId !== draggedItemBankId) {
-    return;
-  }
-  
-  if (dragOverItem) {
-    dragOverItem.classList.remove('drag-over');
-  }
-  dragOverItem = billItem;
-  billItem.classList.add('drag-over');
-  e.dataTransfer.dropEffect = 'move';
-}
-
-function handleBillDrop(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  
-  if (!draggedItem || draggedItemType !== 'bill') return;
-  
-  if (dragOverItem) {
-    dragOverItem.classList.remove('drag-over');
-  }
-  draggedItem.classList.remove('dragging');
-  
-  if (!dragOverItem || dragOverItem === draggedItem) {
-    resetDragState();
-    return;
-  }
-  
-  var fromId = draggedItemId;
-  var toId = parseInt(dragOverItem.dataset.billId);
-  var bankId = draggedItemBankId;
-  
-  // 在 data.bills 中找到同一银行下的账单数组
-  var bankBills = [];
   for (var i = 0; i < data.bills.length; i++) {
-    if (data.bills[i].bankId === bankId) {
-      bankBills.push(data.bills[i]);
-    }
-  }
-  
-  var fromIndex = -1, toIndex = -1;
-  for (var i = 0; i < bankBills.length; i++) {
-    if (bankBills[i].id === fromId) fromIndex = i;
-    if (bankBills[i].id === toId) toIndex = i;
-  }
-  
-  if (fromIndex >= 0 && toIndex >= 0 && fromIndex !== toIndex) {
-    var moved = bankBills.splice(fromIndex, 1)[0];
-    bankBills.splice(toIndex, 0, moved);
+    var bill = data.bills[i];
+    var amount = parseFloat(bill.amount) || 0;
     
-    // 重新构建 data.bills，保持其他银行的账单不变
-    var newBills = [];
-    for (var i = 0; i < data.bills.length; i++) {
-      if (data.bills[i].bankId !== bankId) {
-        newBills.push(data.bills[i]);
-      }
+    if (bill.status === 'unpaid') {
+      unpaidTotal += amount;
+      unpaidCount++;
+    } else {
+      paidTotal += amount;
+      paidCount++;
     }
-    for (var i = 0; i < bankBills.length; i++) {
-      newBills.push(bankBills[i]);
-    }
-    data.bills = newBills;
-    saveData();
-    showToast('已调整顺序');
   }
   
-  resetDragState();
-  render();
+  console.log('📊 统计结果: 未缴', unpaidCount, '笔, RM', unpaidTotal.toFixed(2), '| 已缴', paidCount, '笔, RM', paidTotal.toFixed(2));
+  
+  document.getElementById('unpaidAmount').textContent = 'RM ' + unpaidTotal.toFixed(2);
+  document.getElementById('unpaidCount').textContent = unpaidCount;
+  document.getElementById('paidAmount').textContent = 'RM ' + paidTotal.toFixed(2);
+  document.getElementById('paidCount').textContent = paidCount;
 }
 
-function handleDragEnd(e) {
-  if (draggedItem) {
-    draggedItem.classList.remove('dragging');
-  }
-  if (dragOverItem) {
-    dragOverItem.classList.remove('drag-over');
-  }
-  resetDragState();
+function escapeHtml(str) { 
+  if (!str) return ''; 
+  var d = document.createElement('div'); 
+  d.textContent = str; 
+  return d.innerHTML; 
 }
 
-function resetDragState() {
-  draggedItem = null;
-  draggedItemType = null;
-  draggedItemId = null;
-  draggedItemBankId = null;
-  dragOverItem = null;
-}
-
-// 触摸事件支持（移动端拖拽）
-var touchStartY = 0;
-var touchStartX = 0;
-var touchDraggedItem = null;
-var touchDraggedItemType = null;
-var touchDraggedItemId = null;
-var touchDraggedItemBankId = null;
-var touchClone = null;
-var touchStartElement = null;
-var touchHasMoved = false;
-
-function handleTouchStart(e) {
-  var target = e.target;
-  var billHandle = target.closest('.bill-handle');
-  var bankHandle = target.closest('.bank-handle');
-  
-  if (billHandle) {
-    var billItem = billHandle.closest('.bill-item');
-    if (!billItem) return;
-    var bankGroup = billItem.closest('.bank-group');
-    touchDraggedItem = billItem;
-    touchDraggedItemType = 'bill';
-    touchDraggedItemId = parseInt(billItem.dataset.billId);
-    touchDraggedItemBankId = bankGroup ? parseInt(bankGroup.dataset.bankId) : null;
-    touchStartElement = billHandle;
-    touchHasMoved = false;
-    touchStartY = e.touches[0].clientY;
-    touchStartX = e.touches[0].clientX;
-  } else if (bankHandle) {
-    var bankGroup = bankHandle.closest('.bank-group');
-    if (!bankGroup) return;
-    touchDraggedItem = bankGroup;
-    touchDraggedItemType = 'bank';
-    touchDraggedItemId = parseInt(bankGroup.dataset.bankId);
-    touchDraggedItemBankId = null;
-    touchStartElement = bankHandle;
-    touchHasMoved = false;
-    touchStartY = e.touches[0].clientY;
-    touchStartX = e.touches[0].clientX;
-  }
-}
-
-function handleTouchMove(e) {
-  if (!touchDraggedItem || !touchStartElement) return;
-  
-  var deltaY = Math.abs(e.touches[0].clientY - touchStartY);
-  var deltaX = Math.abs(e.touches[0].clientX - touchStartX);
-  
-  if (deltaY > 8 || deltaX > 8) {
-    touchHasMoved = true;
-    e.preventDefault();
-    
-    // 创建拖拽克隆
-    if (!touchClone) {
-      touchDraggedItem.classList.add('dragging');
-      touchClone = touchDraggedItem.cloneNode(true);
-      touchClone.style.position = 'fixed';
-      touchClone.style.zIndex = '1000';
-      touchClone.style.opacity = '0.8';
-      touchClone.style.pointerEvents = 'none';
-      touchClone.style.width = touchDraggedItem.offsetWidth + 'px';
-      touchClone.style.left = (touchDraggedItem.getBoundingClientRect().left) + 'px';
-      touchClone.style.top = (e.touches[0].clientY - 30) + 'px';
-      document.body.appendChild(touchClone);
-    }
-    
-    // 移动克隆
-    if (touchClone) {
-      touchClone.style.left = (touchDraggedItem.getBoundingClientRect().left) + 'px';
-      touchClone.style.top = (e.touches[0].clientY - 30) + 'px';
-    }
-    
-    // 查找下方元素
-    var elementBelow = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
-    
-    // 清除之前的 drag-over
-    if (dragOverItem) {
-      dragOverItem.classList.remove('drag-over');
-      dragOverItem = null;
-    }
-    
-    if (touchDraggedItemType === 'bill') {
-      var billBelow = elementBelow ? elementBelow.closest('.bill-item') : null;
-      if (billBelow && billBelow !== touchDraggedItem) {
-        var targetBankGroup = billBelow.closest('.bank-group');
-        var targetBankId = targetBankGroup ? parseInt(targetBankGroup.dataset.bankId) : null;
-        if (targetBankId === touchDraggedItemBankId) {
-          dragOverItem = billBelow;
-          billBelow.classList.add('drag-over');
-        }
-      }
-    } else if (touchDraggedItemType === 'bank') {
-      var bankBelow = elementBelow ? elementBelow.closest('.bank-group') : null;
-      if (bankBelow && bankBelow !== touchDraggedItem) {
-        dragOverItem = bankBelow;
-        bankBelow.classList.add('drag-over');
-      }
-    }
-  }
-}
-
-function handleTouchEnd(e) {
-  if (!touchDraggedItem) return;
-  
-  // 移除克隆
-  if (touchClone) {
-    document.body.removeChild(touchClone);
-    touchClone = null;
-  }
-  
-  touchDraggedItem.classList.remove('dragging');
-  if (dragOverItem) {
-    dragOverItem.classList.remove('drag-over');
-  }
-  
-  if (touchHasMoved && dragOverItem && dragOverItem !== touchDraggedItem) {
-    // 执行移动
-    if (touchDraggedItemType === 'bank') {
-      var fromId = touchDraggedItemId;
-      var toId = parseInt(dragOverItem.dataset.bankId);
-      var fromIndex = -1, toIndex = -1;
-      for (var i = 0; i < data.banks.length; i++) {
-        if (data.banks[i].id === fromId) fromIndex = i;
-        if (data.banks[i].id === toId) toIndex = i;
-      }
-      if (fromIndex >= 0 && toIndex >= 0 && fromIndex !== toIndex) {
-        var moved = data.banks.splice(fromIndex, 1)[0];
-        data.banks.splice(toIndex, 0, moved);
-        saveData();
-        showToast('已调整顺序');
-      }
-    } else if (touchDraggedItemType === 'bill') {
-      var fromId = touchDraggedItemId;
-      var toId = parseInt(dragOverItem.dataset.billId);
-      var bankId = touchDraggedItemBankId;
-      var bankBills = [];
-      for (var i = 0; i < data.bills.length; i++) {
-        if (data.bills[i].bankId === bankId) {
-          bankBills.push(data.bills[i]);
-        }
-      }
-      var fromIndex = -1, toIndex = -1;
-      for (var i = 0; i < bankBills.length; i++) {
-        if (bankBills[i].id === fromId) fromIndex = i;
-        if (bankBills[i].id === toId) toIndex = i;
-      }
-      if (fromIndex >= 0 && toIndex >= 0 && fromIndex !== toIndex) {
-        var moved = bankBills.splice(fromIndex, 1)[0];
-        bankBills.splice(toIndex, 0, moved);
-        var newBills = [];
-        for (var i = 0; i < data.bills.length; i++) {
-          if (data.bills[i].bankId !== bankId) {
-            newBills.push(data.bills[i]);
-          }
-        }
-        for (var i = 0; i < bankBills.length; i++) {
-          newBills.push(bankBills[i]);
-        }
-        data.bills = newBills;
-        saveData();
-        showToast('已调整顺序');
-      }
-    }
-    render();
-  }
-  
-  // 重置状态
-  resetDragState();
-  touchDraggedItem = null;
-  touchDraggedItemType = null;
-  touchDraggedItemId = null;
-  touchDraggedItemBankId = null;
-  touchStartElement = null;
-  touchHasMoved = false;
-}
-
+// ========== 渲染 ==========
 function render() {
   listEl.innerHTML = '';
+  
   if (!data.banks || data.banks.length === 0) {
     listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏦</div><div class="empty-state-text">暂无银行</div><div class="empty-state-hint">点击 ＋ 添加银行分类</div></div>';
-    updateSummary(); return;
+    updateSummary(); 
+    return;
   }
   
   var now = new Date();
@@ -1232,17 +631,19 @@ function render() {
         } 
       }
     }
+    
     var bankTotal = 0, bankPaidCount = 0, bankUnpaidCount = 0;
     for (var k = 0; k < bankMonthBills.length; k++) {
       bankTotal += parseFloat(bankMonthBills[k].amount) || 0;
-      if (bankMonthBills[k].status === 'paid') bankPaidCount++; else bankUnpaidCount++;
+      if (bankMonthBills[k].status === 'paid') bankPaidCount++; 
+      else bankUnpaidCount++;
     }
 
     var isExpanded = expandedBanks[bank.id] || false;
     var el = document.createElement('div');
     el.className = 'bank-group' + (isExpanded ? ' expanded' : '');
     el.dataset.bankId = bank.id;
-    el.draggable = false; // 银行组本身不可拖拽，通过手柄拖拽
+    el.draggable = false;
 
     var statusStatsHtml = '';
     if (bankMonthBills.length > 0) {
@@ -1258,18 +659,24 @@ function render() {
       var isOverdue = b.status === 'unpaid' && b.date && b.date < today;
       var statusText = b.status === 'paid' ? '已缴' : '未缴';
       var statusClass = b.status === 'paid' ? 'paid' : 'unpaid';
+      
       billsHtml += '<div class="bill-item' + (isOverdue ? ' overdue' : '') + '" data-bill-id="' + b.id + '" draggable="false">' +
-        '<span class="bill-handle" data-action="drag-bill" title="拖动排序">☰</span>' +
-        '<div class="bill-info"><div class="bill-name">' + escapeHtml(b.name) + '<span class="status-badge ' + statusClass + '">' + statusText + '</span>' + (isOverdue ? '<span style="font-size:0.6rem;color:#c0392b;">⚠</span>' : '') +
-        '</div><div class="bill-amount">RM ' + parseFloat(b.amount).toFixed(2) + '</div></div>' +
-        '<div class="bill-actions"><button class="icon-btn toggle-paid" data-bill-id="' + b.id + '"><div class="icon-dot' + (b.status === 'paid' ? ' paid' : ' unpaid') + '"></div></button><button class="icon-btn edit-bill" data-bill-id="' + b.id + '"><div class="icon-edit"></div></button><button class="icon-btn del-bill" data-bill-id="' + b.id + '"><div class="icon-del"></div></button></div></div>';
+        '<span class="bill-handle">☰</span>' +
+        '<div class="bill-info"><div class="bill-name">' + escapeHtml(b.name) + 
+        '<span class="status-badge ' + statusClass + '">' + statusText + '</span>' + 
+        (isOverdue ? ' ⚠' : '') + '</div>' +
+        '<div class="bill-amount">RM ' + parseFloat(b.amount).toFixed(2) + '</div></div>' +
+        '<div class="bill-actions">' +
+        '<button class="icon-btn toggle-paid" data-bill-id="' + b.id + '"><div class="icon-dot' + (b.status === 'paid' ? ' paid' : ' unpaid') + '"></div></button>' +
+        '<button class="icon-btn edit-bill" data-bill-id="' + b.id + '"><div class="icon-edit"></div></button>' +
+        '<button class="icon-btn del-bill" data-bill-id="' + b.id + '"><div class="icon-del"></div></button></div></div>';
     }
     if (bankBills.length === 0) { billsHtml += '<div class="empty-bank-hint">暂无缴款事项</div>'; }
     billsHtml += '<div class="add-bill-btn" data-bank-id="' + bank.id + '">＋ 添加缴款事项</div>';
 
     el.innerHTML = '<div class="bank-header">' +
       '<div class="bank-header-main">' +
-        '<span class="bank-handle" data-action="drag-bank" title="拖动排序">☰</span>' +
+        '<span class="bank-handle">☰</span>' +
         '<span class="bank-icon">🏦</span>' +
         '<div class="bank-header-info">' +
           '<div class="bank-name-row"><span class="bank-name">' + escapeHtml(bank.name) + '</span><span class="bank-total">RM ' + bankTotal.toFixed(2) + '</span></div>' +
@@ -1285,15 +692,14 @@ function render() {
 
     // 绑定事件
     (function(bankId, bankName) {
-      // 银行头部点击 - 展开/折叠
-      el.querySelector('.bank-header').onclick = function(e) { 
+      var bankHeader = el.querySelector('.bank-header');
+      bankHeader.onclick = function(e) { 
         if (e.target.closest('.bank-del') || e.target.closest('.bank-handle')) return; 
         expandedBanks[bankId] = !expandedBanks[bankId]; 
         saveExpandedState();
         render(); 
       };
       
-      // 删除银行
       el.querySelector('.bank-del').onclick = function(e) { 
         e.stopPropagation(); 
         showModal('确定删除「' + bankName + '」及其所有事项吗？', { icon: '🗑️', confirmText: '删除', cancelText: '取消' }).then(function(ok) { 
@@ -1315,7 +721,6 @@ function render() {
         }); 
       };
       
-      // 添加账单按钮
       el.querySelector('.add-bill-btn').onclick = function(e) {
         e.stopPropagation();
         editingBillId = null; 
@@ -1386,22 +791,10 @@ function render() {
         }; 
       }
       
-      // 账单拖拽手柄 - 阻止冒泡
-      var billHandles = el.querySelectorAll('.bill-handle');
-      for (var h = 0; h < billHandles.length; h++) {
-        billHandles[h].onclick = function(e) {
-          e.stopPropagation();
-        };
-        billHandles[h].addEventListener('touchstart', handleTouchStart, { passive: false });
-      }
-      
-      // 银行拖拽手柄
-      var bankHandle = el.querySelector('.bank-handle');
-      if (bankHandle) {
-        bankHandle.onclick = function(e) {
-          e.stopPropagation();
-        };
-        bankHandle.addEventListener('touchstart', handleTouchStart, { passive: false });
+      // 手柄触摸事件
+      var handles = el.querySelectorAll('.bill-handle, .bank-handle');
+      for (var h = 0; h < handles.length; h++) {
+        handles[h].addEventListener('touchstart', handleTouchStart, { passive: false });
       }
       
     })(bank.id, bank.name);
@@ -1409,103 +802,408 @@ function render() {
     listEl.appendChild(el);
   }
   
-  // 重新绑定拖拽事件监听器到所有账单项
+  // 绑定拖拽事件
   var allBillItems = listEl.querySelectorAll('.bill-item');
-  for (var bi2 = 0; bi2 < allBillItems.length; bi2++) {
-    allBillItems[bi2].addEventListener('dragstart', handleBillDragStart);
-    allBillItems[bi2].addEventListener('dragover', handleBillDragOver);
-    allBillItems[bi2].addEventListener('drop', handleBillDrop);
-    allBillItems[bi2].addEventListener('dragend', handleDragEnd);
-    allBillItems[bi2].setAttribute('draggable', 'true');
+  for (var i = 0; i < allBillItems.length; i++) {
+    allBillItems[i].addEventListener('dragstart', handleBillDragStart);
+    allBillItems[i].addEventListener('dragover', handleBillDragOver);
+    allBillItems[i].addEventListener('drop', handleBillDrop);
+    allBillItems[i].addEventListener('dragend', handleDragEnd);
+    allBillItems[i].setAttribute('draggable', 'true');
   }
   
-  // 重新绑定拖拽事件监听器到所有银行组
   var allBankGroups = listEl.querySelectorAll('.bank-group');
-  for (var bg = 0; bg < allBankGroups.length; bg++) {
-    allBankGroups[bg].addEventListener('dragstart', handleBankDragStart);
-    allBankGroups[bg].addEventListener('dragover', handleBankDragOver);
-    allBankGroups[bg].addEventListener('drop', handleBankDrop);
-    allBankGroups[bg].addEventListener('dragend', handleDragEnd);
-    allBankGroups[bg].setAttribute('draggable', 'true');
+  for (var j = 0; j < allBankGroups.length; j++) {
+    allBankGroups[j].addEventListener('dragstart', handleBankDragStart);
+    allBankGroups[j].addEventListener('dragover', handleBankDragOver);
+    allBankGroups[j].addEventListener('drop', handleBankDrop);
+    allBankGroups[j].addEventListener('dragend', handleDragEnd);
+    allBankGroups[j].setAttribute('draggable', 'true');
+  }
+  
+  // 更新汇总
+  updateSummary();
+}
+
+// ========== 拖拽功能 ==========
+function handleBankDragStart(e) {
+  var bankGroup = e.target.closest('.bank-group');
+  if (!bankGroup) return;
+  var handle = e.target.closest('.bank-handle');
+  if (!handle) { e.preventDefault(); return; }
+  
+  e.stopPropagation();
+  draggedItem = bankGroup;
+  draggedItemType = 'bank';
+  draggedItemId = parseInt(bankGroup.dataset.bankId);
+  dragOverItem = null;
+  bankGroup.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', '');
+}
+
+function handleBankDragOver(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  var bankGroup = e.target.closest('.bank-group');
+  if (!bankGroup || !draggedItem || draggedItemType !== 'bank' || bankGroup === draggedItem) return;
+  
+  if (dragOverItem) dragOverItem.classList.remove('drag-over');
+  dragOverItem = bankGroup;
+  bankGroup.classList.add('drag-over');
+  e.dataTransfer.dropEffect = 'move';
+}
+
+function handleBankDrop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  if (!draggedItem || draggedItemType !== 'bank') return;
+  
+  if (dragOverItem) dragOverItem.classList.remove('drag-over');
+  draggedItem.classList.remove('dragging');
+  
+  if (!dragOverItem || dragOverItem === draggedItem) { resetDragState(); return; }
+  
+  var fromId = draggedItemId;
+  var toId = parseInt(dragOverItem.dataset.bankId);
+  var fromIndex = -1, toIndex = -1;
+  for (var i = 0; i < data.banks.length; i++) {
+    if (data.banks[i].id === fromId) fromIndex = i;
+    if (data.banks[i].id === toId) toIndex = i;
+  }
+  
+  if (fromIndex >= 0 && toIndex >= 0 && fromIndex !== toIndex) {
+    var moved = data.banks.splice(fromIndex, 1)[0];
+    data.banks.splice(toIndex, 0, moved);
+    saveData();
+    showToast('已调整顺序');
+  }
+  resetDragState();
+  render();
+}
+
+function handleBillDragStart(e) {
+  var billItem = e.target.closest('.bill-item');
+  if (!billItem) return;
+  var handle = e.target.closest('.bill-handle');
+  if (!handle) { e.preventDefault(); return; }
+  
+  e.stopPropagation();
+  draggedItem = billItem;
+  draggedItemType = 'bill';
+  draggedItemId = parseInt(billItem.dataset.billId);
+  var bankGroup = billItem.closest('.bank-group');
+  draggedItemBankId = bankGroup ? parseInt(bankGroup.dataset.bankId) : null;
+  dragOverItem = null;
+  billItem.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', '');
+}
+
+function handleBillDragOver(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  var billItem = e.target.closest('.bill-item');
+  if (!billItem || !draggedItem || draggedItemType !== 'bill' || billItem === draggedItem) return;
+  
+  var targetBankGroup = billItem.closest('.bank-group');
+  var targetBankId = targetBankGroup ? parseInt(targetBankGroup.dataset.bankId) : null;
+  if (targetBankId !== draggedItemBankId) return;
+  
+  if (dragOverItem) dragOverItem.classList.remove('drag-over');
+  dragOverItem = billItem;
+  billItem.classList.add('drag-over');
+  e.dataTransfer.dropEffect = 'move';
+}
+
+function handleBillDrop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  if (!draggedItem || draggedItemType !== 'bill') return;
+  
+  if (dragOverItem) dragOverItem.classList.remove('drag-over');
+  draggedItem.classList.remove('dragging');
+  
+  if (!dragOverItem || dragOverItem === draggedItem) { resetDragState(); return; }
+  
+  var fromId = draggedItemId;
+  var toId = parseInt(dragOverItem.dataset.billId);
+  var bankId = draggedItemBankId;
+  
+  var bankBills = [];
+  for (var i = 0; i < data.bills.length; i++) {
+    if (data.bills[i].bankId === bankId) bankBills.push(data.bills[i]);
+  }
+  
+  var fromIndex = -1, toIndex = -1;
+  for (var i = 0; i < bankBills.length; i++) {
+    if (bankBills[i].id === fromId) fromIndex = i;
+    if (bankBills[i].id === toId) toIndex = i;
+  }
+  
+  if (fromIndex >= 0 && toIndex >= 0 && fromIndex !== toIndex) {
+    var moved = bankBills.splice(fromIndex, 1)[0];
+    bankBills.splice(toIndex, 0, moved);
+    var newBills = [];
+    for (var i = 0; i < data.bills.length; i++) {
+      if (data.bills[i].bankId !== bankId) newBills.push(data.bills[i]);
+    }
+    for (var i = 0; i < bankBills.length; i++) newBills.push(bankBills[i]);
+    data.bills = newBills;
+    saveData();
+    showToast('已调整顺序');
+  }
+  resetDragState();
+  render();
+}
+
+function handleDragEnd(e) {
+  if (draggedItem) draggedItem.classList.remove('dragging');
+  if (dragOverItem) dragOverItem.classList.remove('drag-over');
+  resetDragState();
+}
+
+function resetDragState() {
+  draggedItem = null;
+  draggedItemType = null;
+  draggedItemId = null;
+  draggedItemBankId = null;
+  dragOverItem = null;
+}
+
+// ========== 触摸拖拽 ==========
+function handleTouchStart(e) {
+  var target = e.target;
+  var billHandle = target.closest('.bill-handle');
+  var bankHandle = target.closest('.bank-handle');
+  
+  if (billHandle) {
+    var billItem = billHandle.closest('.bill-item');
+    if (!billItem) return;
+    var bankGroup = billItem.closest('.bank-group');
+    touchDraggedItem = billItem;
+    touchDraggedItemType = 'bill';
+    touchDraggedItemId = parseInt(billItem.dataset.billId);
+    touchDraggedItemBankId = bankGroup ? parseInt(bankGroup.dataset.bankId) : null;
+    touchStartElement = billHandle;
+    touchHasMoved = false;
+    touchStartY = e.touches[0].clientY;
+    touchStartX = e.touches[0].clientX;
+  } else if (bankHandle) {
+    var bankGroup = bankHandle.closest('.bank-group');
+    if (!bankGroup) return;
+    touchDraggedItem = bankGroup;
+    touchDraggedItemType = 'bank';
+    touchDraggedItemId = parseInt(bankGroup.dataset.bankId);
+    touchDraggedItemBankId = null;
+    touchStartElement = bankHandle;
+    touchHasMoved = false;
+    touchStartY = e.touches[0].clientY;
+    touchStartX = e.touches[0].clientX;
   }
 }
 
-function updateSummary() {
-  var now = new Date();
-  var currentMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
-  var unpaidTotal = 0, paidTotal = 0, unpaidCount = 0, paidCount = 0;
-  for (var i = 0; i < data.bills.length; i++) {
-    if (data.bills[i].date && data.bills[i].date.indexOf(currentMonth) === 0) {
-      if (data.bills[i].status === 'unpaid') { unpaidTotal += parseFloat(data.bills[i].amount) || 0; unpaidCount++; }
-      else { paidTotal += parseFloat(data.bills[i].amount) || 0; paidCount++; }
+function handleTouchMove(e) {
+  if (!touchDraggedItem || !touchStartElement) return;
+  var deltaY = Math.abs(e.touches[0].clientY - touchStartY);
+  var deltaX = Math.abs(e.touches[0].clientX - touchStartX);
+  
+  if (deltaY > 8 || deltaX > 8) {
+    touchHasMoved = true;
+    e.preventDefault();
+    if (!touchClone) {
+      touchDraggedItem.classList.add('dragging');
+      touchClone = touchDraggedItem.cloneNode(true);
+      touchClone.style.position = 'fixed';
+      touchClone.style.zIndex = '1000';
+      touchClone.style.opacity = '0.8';
+      touchClone.style.pointerEvents = 'none';
+      touchClone.style.width = touchDraggedItem.offsetWidth + 'px';
+      touchClone.style.left = (touchDraggedItem.getBoundingClientRect().left) + 'px';
+      touchClone.style.top = (e.touches[0].clientY - 30) + 'px';
+      document.body.appendChild(touchClone);
+    }
+    if (touchClone) {
+      touchClone.style.left = (touchDraggedItem.getBoundingClientRect().left) + 'px';
+      touchClone.style.top = (e.touches[0].clientY - 30) + 'px';
+    }
+    
+    var elementBelow = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+    if (dragOverItem) { dragOverItem.classList.remove('drag-over'); dragOverItem = null; }
+    
+    if (touchDraggedItemType === 'bill') {
+      var billBelow = elementBelow ? elementBelow.closest('.bill-item') : null;
+      if (billBelow && billBelow !== touchDraggedItem) {
+        var targetBankGroup = billBelow.closest('.bank-group');
+        var targetBankId = targetBankGroup ? parseInt(targetBankGroup.dataset.bankId) : null;
+        if (targetBankId === touchDraggedItemBankId) {
+          dragOverItem = billBelow;
+          billBelow.classList.add('drag-over');
+        }
+      }
+    } else if (touchDraggedItemType === 'bank') {
+      var bankBelow = elementBelow ? elementBelow.closest('.bank-group') : null;
+      if (bankBelow && bankBelow !== touchDraggedItem) {
+        dragOverItem = bankBelow;
+        bankBelow.classList.add('drag-over');
+      }
     }
   }
-  document.getElementById('unpaidAmount').textContent = 'RM ' + unpaidTotal.toFixed(2);
-  document.getElementById('unpaidCount').textContent = unpaidCount;
-  document.getElementById('paidAmount').textContent = 'RM ' + paidTotal.toFixed(2);
-  document.getElementById('paidCount').textContent = paidCount;
 }
 
-function escapeHtml(str) { if (!str) return ''; var d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+function handleTouchEnd(e) {
+  if (!touchDraggedItem) return;
+  if (touchClone) { document.body.removeChild(touchClone); touchClone = null; }
+  touchDraggedItem.classList.remove('dragging');
+  if (dragOverItem) dragOverItem.classList.remove('drag-over');
+  
+  if (touchHasMoved && dragOverItem && dragOverItem !== touchDraggedItem) {
+    if (touchDraggedItemType === 'bank') {
+      var fromId = touchDraggedItemId;
+      var toId = parseInt(dragOverItem.dataset.bankId);
+      var fromIndex = -1, toIndex = -1;
+      for (var i = 0; i < data.banks.length; i++) {
+        if (data.banks[i].id === fromId) fromIndex = i;
+        if (data.banks[i].id === toId) toIndex = i;
+      }
+      if (fromIndex >= 0 && toIndex >= 0 && fromIndex !== toIndex) {
+        var moved = data.banks.splice(fromIndex, 1)[0];
+        data.banks.splice(toIndex, 0, moved);
+        saveData();
+        showToast('已调整顺序');
+      }
+    } else if (touchDraggedItemType === 'bill') {
+      var fromId = touchDraggedItemId;
+      var toId = parseInt(dragOverItem.dataset.billId);
+      var bankId = touchDraggedItemBankId;
+      var bankBills = [];
+      for (var i = 0; i < data.bills.length; i++) {
+        if (data.bills[i].bankId === bankId) bankBills.push(data.bills[i]);
+      }
+      var fromIndex = -1, toIndex = -1;
+      for (var i = 0; i < bankBills.length; i++) {
+        if (bankBills[i].id === fromId) fromIndex = i;
+        if (bankBills[i].id === toId) toIndex = i;
+      }
+      if (fromIndex >= 0 && toIndex >= 0 && fromIndex !== toIndex) {
+        var moved = bankBills.splice(fromIndex, 1)[0];
+        bankBills.splice(toIndex, 0, moved);
+        var newBills = [];
+        for (var i = 0; i < data.bills.length; i++) {
+          if (data.bills[i].bankId !== bankId) newBills.push(data.bills[i]);
+        }
+        for (var i = 0; i < bankBills.length; i++) newBills.push(bankBills[i]);
+        data.bills = newBills;
+        saveData();
+        showToast('已调整顺序');
+      }
+    }
+    render();
+  }
+  
+  resetDragState();
+  touchDraggedItem = null;
+  touchDraggedItemType = null;
+  touchDraggedItemId = null;
+  touchDraggedItemBankId = null;
+  touchStartElement = null;
+  touchHasMoved = false;
+}
 
-document.getElementById('addBankBtn').onclick = function() { editingBankId = null; bankNameInput.value = ''; openBankForm(); };
+// ========== 菜单与功能按钮 ==========
+menuBtn.onclick = function(e) { e.stopPropagation(); menuOverlay.classList.add('show'); };
+menuCloseBtn.onclick = function() { menuOverlay.classList.remove('show'); };
+menuOverlay.addEventListener('click', function(e) { if (e.target === menuOverlay) menuOverlay.classList.remove('show'); });
 
-// 清空数据
-document.getElementById('clearAllBtn').onclick = function() {
-  showModal('确定清空所有数据吗？', { icon: '⚠️', confirmText: '清空', cancelText: '取消' }).then(function(ok) {
-    if (!ok) return;
-    data = { banks: [], bills: [] }; expandedBanks = {}; nextBankId = 1; nextBillId = 1;
-    saveExpandedState(); saveData(); showToast('已清空'); render();
-  });
-};
+tutorialBtn.onclick = function() { menuOverlay.classList.remove('show'); showTutorial(); };
+tutorialCloseBtn.onclick = function() { tutorialOverlay.classList.remove('show'); };
+tutorialOverlay.addEventListener('click', function(e) { if (e.target === tutorialOverlay) tutorialOverlay.classList.remove('show'); });
 
-// 导出数据
 document.getElementById('exportBtn').onclick = function() {
+  menuOverlay.classList.remove('show');
   var json = JSON.stringify(data, null, 2);
   var blob = new Blob([json], { type: 'application/json' });
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a');
-  a.href = url; a.download = 'monthly-bills-' + new Date().toISOString().split('T')[0] + '.json';
-  a.click(); URL.revokeObjectURL(url);
+  a.href = url; 
+  a.download = 'monthly-bills-' + new Date().toISOString().split('T')[0] + '.json';
+  a.click(); 
+  URL.revokeObjectURL(url);
   showToast('导出成功');
 };
 
-// 导入数据
-var importFile = document.getElementById('importFile');
-document.getElementById('importBtn').onclick = function() { importFile.click(); };
+document.getElementById('importBtn').onclick = function() { 
+  menuOverlay.classList.remove('show');
+  importFile.click(); 
+};
+
+document.getElementById('clearAllBtn').onclick = function() {
+  menuOverlay.classList.remove('show');
+  showModal('确定清空所有数据吗？', { icon: '⚠️', confirmText: '清空', cancelText: '取消' }).then(function(ok) {
+    if (!ok) return;
+    data = { banks: [], bills: [] }; 
+    expandedBanks = {}; 
+    nextBankId = 1; 
+    nextBillId = 1;
+    saveExpandedState(); 
+    saveData(); 
+    showToast('已清空'); 
+    render();
+  });
+};
+
+document.getElementById('addBankBtn').onclick = function() { 
+  editingBankId = null; 
+  bankNameInput.value = ''; 
+  openBankForm(); 
+};
+
 importFile.onchange = function(e) {
-  var file = e.target.files[0]; if (!file) return;
+  var file = e.target.files[0]; 
+  if (!file) return;
   var reader = new FileReader();
   reader.onload = function(ev) {
     try {
       var nd = JSON.parse(ev.target.result);
       if (!nd.banks || !nd.bills) throw new Error('格式错误');
-      showModal('导入 ' + nd.banks.length + ' 银行 ' + nd.bills.length + ' 条记录？', { icon: '📥', confirmText: '导入', cancelText: '取消', confirmClass: 'primary-action' }).then(function(ok) {
+      showModal('导入 ' + nd.banks.length + ' 银行 ' + nd.bills.length + ' 条记录？', 
+        { icon: '📥', confirmText: '导入', cancelText: '取消', confirmClass: 'primary-action' }
+      ).then(function(ok) {
         if (!ok) { importFile.value = ''; return; }
-        data = nd; expandedBanks = {}; nextBankId = 1; nextBillId = 1;
-        for (var i = 0; i < data.banks.length; i++) { if (data.banks[i].id >= nextBankId) nextBankId = data.banks[i].id + 1; expandedBanks[data.banks[i].id] = true; }
-        for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id >= nextBillId) nextBillId = data.bills[i].id + 1; }
-        saveExpandedState(); saveData(); showToast('导入成功'); importFile.value = ''; render();
+        data = nd; 
+        expandedBanks = {}; 
+        nextBankId = 1; 
+        nextBillId = 1;
+        for (var i = 0; i < data.banks.length; i++) { 
+          if (data.banks[i].id >= nextBankId) nextBankId = data.banks[i].id + 1; 
+          expandedBanks[data.banks[i].id] = true; 
+        }
+        for (var i = 0; i < data.bills.length; i++) { 
+          if (data.bills[i].id >= nextBillId) nextBillId = data.bills[i].id + 1; 
+        }
+        saveExpandedState(); 
+        saveData(); 
+        showToast('导入成功'); 
+        importFile.value = ''; 
+        render();
       });
-    } catch(err) { showToast('导入失败'); importFile.value = ''; }
+    } catch(err) { 
+      showToast('导入失败: ' + err.message); 
+      importFile.value = ''; 
+    }
   };
   reader.readAsText(file);
 };
 
-// 全局触摸事件
+// ========== 全局事件 ==========
 document.addEventListener('touchmove', function(e) {
-  if (touchDraggedItem) {
-    handleTouchMove(e);
-  }
+  if (touchDraggedItem) { handleTouchMove(e); }
 }, { passive: false });
 
 document.addEventListener('touchend', function(e) {
-  if (touchDraggedItem) {
-    handleTouchEnd(e);
-  }
+  if (touchDraggedItem) { handleTouchEnd(e); }
 });
 
-// ESC 键关闭弹窗
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
     if (modalOverlay.classList.contains('show')) { hideModal(false); return; }
@@ -1516,9 +1214,73 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
-// 初始化：加载数据并渲染
+// ========== PWA 安装 ==========
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.style.display = 'flex';
+});
+installBtn.addEventListener('click', async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    installBtn.style.display = 'none';
+  }
+});
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  installBtn.style.display = 'none';
+});
+
+// ========== Service Worker ==========
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    const swCode = `
+      self.addEventListener('install', event => {
+        event.waitUntil(
+          caches.open('payment-v2').then(cache => cache.addAll(['./', '/index.html']))
+        );
+      });
+      self.addEventListener('fetch', event => {
+        event.respondWith(
+          caches.match(event.request).then(response => response || fetch(event.request))
+        );
+      });
+    `;
+    const blob = new Blob([swCode], { type: 'application/javascript' });
+    navigator.serviceWorker.register(URL.createObjectURL(blob));
+  });
+}
+
+// ========== 安装教程 ==========
+function showTutorial() {
+  var browser = 'other';
+  var ua = navigator.userAgent;
+  if (/iPhone|iPad|iPod/.test(ua) || (/Safari/.test(ua) && !/Chrome/.test(ua))) browser = 'safari';
+  else if (/Chrome/.test(ua) && /Android/.test(ua)) browser = 'chrome';
+  
+  var html = '';
+  if (browser === 'safari') {
+    html = '<div style="background:#007aff;color:#fff;padding:4px 10px;border-radius:10px;display:inline-block;font-size:0.75rem;margin-bottom:8px;">🍎 Safari</div>' +
+      '<div style="display:flex;gap:10px;padding:8px 0;"><div style="width:28px;height:28px;background:#2c3e50;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">1</div><div>点击底部 <strong>分享按钮 ⎋</strong></div></div>' +
+      '<div style="display:flex;gap:10px;padding:8px 0;"><div style="width:28px;height:28px;background:#2c3e50;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">2</div><div>滑动找到 <strong>「添加到主屏幕」</strong></div></div>' +
+      '<div style="display:flex;gap:10px;padding:8px 0;"><div style="width:28px;height:28px;background:#2c3e50;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">3</div><div>点击 <strong>「添加」</strong></div></div>';
+  } else {
+    html = '<div style="background:#4285f4;color:#fff;padding:4px 10px;border-radius:10px;display:inline-block;font-size:0.75rem;margin-bottom:8px;">🌐 浏览器</div>' +
+      '<div style="display:flex;gap:10px;padding:8px 0;"><div style="width:28px;height:28px;background:#2c3e50;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">1</div><div>点击菜单 <strong>⋮</strong></div></div>' +
+      '<div style="display:flex;gap:10px;padding:8px 0;"><div style="width:28px;height:28px;background:#2c3e50;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">2</div><div>选择 <strong>「添加到主屏幕」</strong></div></div>' +
+      '<div style="display:flex;gap:10px;padding:8px 0;"><div style="width:28px;height:28px;background:#2c3e50;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">3</div><div>点击 <strong>「安装」</strong></div></div>';
+  }
+  document.getElementById('tutorialContent').innerHTML = html;
+  tutorialOverlay.classList.add('show');
+}
+
+// ========== 启动 ==========
 loadData();
 render();
+console.log('🚀 应用已启动');
 </script>
 
 </body>
