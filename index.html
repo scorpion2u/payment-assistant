@@ -52,6 +52,12 @@
     .bank-group{
       border-radius:22px;background:linear-gradient(145deg,#e8edf3,#d2d8e4);
       box-shadow:8px 8px 16px rgba(0,0,0,0.1),-6px -6px 14px rgba(255,255,255,0.9);overflow:hidden;
+      transition:box-shadow 0.3s;
+    }
+    @media (hover: hover) {
+      .bank-group:hover {
+        box-shadow:10px 10px 20px rgba(0,0,0,0.12),-8px -8px 16px rgba(255,255,255,0.95);
+      }
     }
     .bank-header{display:flex;align-items:flex-start;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;gap:8px;}
     .bank-header-main{display:flex;align-items:center;gap:8px;flex:1;min-width:0;}
@@ -64,15 +70,16 @@
     .bank-status-stats .stat-paid{color:#155724;background:#d4edda;padding:2px 8px;border-radius:10px;}
     .bank-status-stats .stat-unpaid{color:#721c24;background:#f8d7da;padding:2px 8px;border-radius:10px;}
     .bank-header-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;padding-top:2px;}
-    .collapse-arrow{font-size:0.65rem;opacity:0.4;transition:transform 0.3s;}
+    .collapse-arrow{font-size:0.65rem;opacity:0.4;transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);}
     .bank-group.expanded .collapse-arrow{transform:rotate(180deg);}
-    .bank-body{max-height:0;overflow:hidden;transition:max-height 0.4s ease;}
+    .bank-body{max-height:0;overflow:hidden;transition:max-height 0.4s cubic-bezier(0.4,0,0.2,1);}
     .bank-group.expanded .bank-body{max-height:2000px;}
     .bank-items{padding:0 12px 12px;display:flex;flex-direction:column;gap:8px;}
     .bill-item{
       display:flex;align-items:center;padding:10px 14px;border-radius:18px;
       background:linear-gradient(145deg,#dfe4eb,#cfd5de);
       box-shadow:inset 2px 2px 4px rgba(0,0,0,0.06),inset -2px -2px 4px rgba(255,255,255,0.5);gap:8px;
+      transition:background 0.3s,box-shadow 0.3s;
     }
     .bill-item.overdue{background:linear-gradient(145deg,#fce4e4,#f5d0d0);}
     .bill-info{display:flex;flex-direction:column;gap:1px;flex:1;min-width:0;}
@@ -155,6 +162,7 @@
     .modal-buttons .btn{flex:1;padding:12px;}
     .modal-buttons .btn.confirm-btn{color:#c0392b;font-weight:700;}
     .modal-buttons .btn.confirm-btn.primary-action{color:#2c7a4a;font-weight:700;}
+    .modal-buttons .btn.append-btn{color:#2c3e50;font-weight:700;}
     input{
       border:none;padding:12px;border-radius:18px;background:linear-gradient(145deg,#e8edf3,#d2d8e4);
       box-shadow:inset 4px 4px 8px rgba(0,0,0,0.08),inset -4px -4px 8px rgba(255,255,255,0.7);
@@ -393,7 +401,7 @@
     <div class="modal-box">
       <div class="modal-icon" id="modalIcon">⚠️</div>
       <div class="modal-message" id="modalMessage"></div>
-      <div class="modal-buttons">
+      <div class="modal-buttons" id="modalButtons">
         <button class="btn cancel-btn" id="modalCancel">取消</button>
         <button class="btn confirm-btn" id="modalConfirm">确认</button>
       </div>
@@ -422,7 +430,6 @@ function showTutorial() {
   let tutorialHTML = '';
   
   if (browser === 'ios' || browser === 'safari') {
-    // Safari / iOS 教程
     tutorialHTML = `
       <div class="browser-badge safari">🍎 Safari 浏览器</div>
       <div class="tutorial-step">
@@ -439,7 +446,6 @@ function showTutorial() {
       </div>
     `;
   } else if (browser === 'android-chrome') {
-    // Android Chrome 教程
     tutorialHTML = `
       <div class="browser-badge chrome">🌐 Chrome 浏览器</div>
       <div class="tutorial-step">
@@ -456,7 +462,6 @@ function showTutorial() {
       </div>
     `;
   } else if (browser === 'samsung') {
-    // 三星浏览器教程
     tutorialHTML = `
       <div class="browser-badge samsung">📱 三星浏览器</div>
       <div class="tutorial-step">
@@ -473,7 +478,6 @@ function showTutorial() {
       </div>
     `;
   } else if (browser === 'edge') {
-    // Edge 浏览器教程
     tutorialHTML = `
       <div class="browser-badge other">🔵 Edge 浏览器</div>
       <div class="tutorial-step">
@@ -490,7 +494,6 @@ function showTutorial() {
       </div>
     `;
   } else {
-    // 其他浏览器通用教程
     tutorialHTML = `
       <div class="browser-badge other">🌐 通用教程</div>
       <div class="tutorial-step">
@@ -618,15 +621,12 @@ tutorialOverlay.addEventListener('click', function(e) {
 // 菜单内按钮点击后自动关闭弹窗
 document.getElementById('exportBtn').onclick = function() {
   menuOverlay.classList.remove('show');
-  // 导出逻辑在下面
 };
 document.getElementById('importBtn').onclick = function() {
   menuOverlay.classList.remove('show');
-  // 导入逻辑在下面
 };
 document.getElementById('clearAllBtn').onclick = function() {
   menuOverlay.classList.remove('show');
-  // 清空逻辑在下面
 };
 
 // ========== 应用核心逻辑 ==========
@@ -660,6 +660,7 @@ var modalIcon = document.getElementById('modalIcon');
 var modalMessage = document.getElementById('modalMessage');
 var modalCancel = document.getElementById('modalCancel');
 var modalConfirm = document.getElementById('modalConfirm');
+var modalButtons = document.getElementById('modalButtons');
 
 function loadData() {
   var saved = localStorage.getItem(STORAGE_KEY);
@@ -695,23 +696,50 @@ function showToast(msg) {
   toastTimer = setTimeout(function() { toast.classList.remove('show'); }, 1800);
 }
 
+// ========== 优化后的模态框 ==========
 var modalResolve = null;
 function showModal(message, options) {
   options = options || {};
   return new Promise(function(resolve) {
-    modalResolve = resolve; modalMessage.textContent = message;
+    modalResolve = resolve;
+    modalMessage.textContent = message;
     modalIcon.textContent = options.icon || '⚠️';
-    modalConfirm.className = 'btn confirm-btn' + (options.confirmClass ? ' ' + options.confirmClass : '');
-    modalConfirm.textContent = options.confirmText || '确认';
-    modalCancel.textContent = options.cancelText || '取消';
-    modalCancel.style.display = options.showCancel === false ? 'none' : '';
+    
+    // 自定义按钮
+    if (options.customButtons) {
+      modalButtons.innerHTML = '';
+      for (var i = 0; i < options.customButtons.length; i++) {
+        var btn = document.createElement('button');
+        btn.className = 'btn ' + (options.customButtons[i].className || '');
+        btn.textContent = options.customButtons[i].text;
+        btn.onclick = (function(index) {
+          return function() { hideModal(options.customButtons[index].value); };
+        })(i);
+        modalButtons.appendChild(btn);
+      }
+    } else {
+      // 默认按钮
+      modalButtons.innerHTML = `
+        <button class="btn cancel-btn" id="modalCancel">${options.cancelText || '取消'}</button>
+        <button class="btn confirm-btn${options.confirmClass ? ' ' + options.confirmClass : ''}" id="modalConfirm">${options.confirmText || '确认'}</button>
+      `;
+      document.getElementById('modalCancel').onclick = function() { hideModal(false); };
+      document.getElementById('modalConfirm').onclick = function() { hideModal(true); };
+    }
+    
     modalOverlay.classList.add('show');
   });
 }
-function hideModal(result) { modalOverlay.classList.remove('show'); if (modalResolve) { modalResolve(result); modalResolve = null; } }
-modalConfirm.onclick = function() { hideModal(true); };
-modalCancel.onclick = function() { hideModal(false); };
-modalOverlay.addEventListener('click', function(e) { if (e.target === modalOverlay) hideModal(false); });
+
+function hideModal(result) { 
+  modalOverlay.classList.remove('show'); 
+  if (modalResolve) { 
+    modalResolve(result); 
+    modalResolve = null; 
+  } 
+}
+
+modalOverlay.addEventListener('click', function(e) { if (e.target === modalOverlay) hideModal(null); });
 
 statusSelectDisplay.addEventListener('click', function(e) {
   e.stopPropagation();
@@ -735,8 +763,18 @@ function setStatusValue(value) {
   for (var i = 0; i < statusOptions.length; i++) { statusOptions[i].classList.remove('selected'); if (statusOptions[i].dataset.value === value) { statusOptions[i].classList.add('selected'); statusSelectText.textContent = statusOptions[i].textContent; } }
 }
 
-function openBankForm() { bankFormOverlay.classList.add('show'); setTimeout(function() { bankNameInput.focus(); }, 150); }
-function closeBankForm() { bankFormOverlay.classList.remove('show'); editingBankId = null; }
+function openBankForm() { 
+  bankFormOverlay.classList.add('show'); 
+  setTimeout(function() { bankNameInput.focus(); }, 150); 
+  // 添加键盘支持
+  bankNameInput.onkeydown = function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      bankSaveBtn.click();
+    }
+  };
+}
+function closeBankForm() { bankFormOverlay.classList.remove('show'); editingBankId = null; bankNameInput.onkeydown = null; }
 bankFormOverlay.addEventListener('click', function(e) { if (e.target === bankFormOverlay) closeBankForm(); });
 bankCancelBtn.onclick = closeBankForm;
 
@@ -747,14 +785,30 @@ bankSaveBtn.onclick = function() {
   else { 
     data.banks.push({ id: nextBankId, name: name }); 
     expandedBanks[nextBankId] = true; 
-    saveExpandedState(); // 保存展开状态
+    saveExpandedState();
     nextBankId++; 
   }
   saveData(); editingBankId = null; bankNameInput.value = ''; closeBankForm(); showToast('银行已保存'); render();
 };
 
-function openBillForm(bankId) { currentBankId = bankId; billFormOverlay.classList.add('show'); setTimeout(function() { billNameInput.focus(); }, 150); }
-function closeBillForm() { billFormOverlay.classList.remove('show'); editingBillId = null; currentBankId = null; }
+function openBillForm(bankId) { 
+  currentBankId = bankId; 
+  billFormOverlay.classList.add('show'); 
+  setTimeout(function() { billNameInput.focus(); }, 150); 
+  // 添加键盘支持
+  billAmountInput.onkeydown = function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      billSaveBtn.click();
+    }
+  };
+}
+function closeBillForm() { 
+  billFormOverlay.classList.remove('show'); 
+  editingBillId = null; 
+  currentBankId = null; 
+  billAmountInput.onkeydown = null; 
+}
 billFormOverlay.addEventListener('click', function(e) { if (e.target === billFormOverlay) closeBillForm(); });
 billCancelBtn.onclick = closeBillForm;
 
@@ -771,6 +825,101 @@ billSaveBtn.onclick = function() {
   saveData(); editingBillId = null; currentBankId = null; billNameInput.value = ''; billAmountInput.value = ''; closeBillForm(); showToast('已保存'); render();
 };
 
+// ========== 局部更新账单状态（性能优化） ==========
+function updateBillStatusInDOM(billId) {
+  // 查找账单数据
+  var bill = null;
+  for (var i = 0; i < data.bills.length; i++) {
+    if (data.bills[i].id === billId) { bill = data.bills[i]; break; }
+  }
+  if (!bill) return;
+  
+  // 查找对应的 DOM 元素
+  var billItem = document.querySelector('.bill-item[data-bill-id="' + billId + '"]');
+  if (!billItem) return;
+  
+  var dotEl = billItem.querySelector('.icon-dot');
+  var badge = billItem.querySelector('.status-badge');
+  var overdueIcon = billItem.querySelector('span[style*="color:#c0392b"]');
+  
+  if (dotEl) {
+    dotEl.className = 'icon-dot ' + (bill.status === 'paid' ? 'paid' : 'unpaid');
+  }
+  
+  if (badge) {
+    badge.textContent = bill.status === 'paid' ? '已缴' : '未缴';
+    badge.className = 'status-badge ' + (bill.status === 'paid' ? 'paid' : 'unpaid');
+  }
+  
+  // 更新逾期状态
+  var today = new Date().toISOString().split('T')[0];
+  var isOverdue = bill.status === 'unpaid' && bill.date && bill.date < today;
+  
+  if (isOverdue) {
+    billItem.classList.add('overdue');
+    // 如果没有逾期图标，添加一个
+    if (!overdueIcon) {
+      var billNameEl = billItem.querySelector('.bill-name');
+      if (billNameEl) {
+        var icon = document.createElement('span');
+        icon.style.cssText = 'font-size:0.6rem;color:#c0392b;';
+        icon.textContent = '⚠';
+        billNameEl.appendChild(icon);
+      }
+    }
+  } else {
+    billItem.classList.remove('overdue');
+    // 移除逾期图标
+    if (overdueIcon) {
+      overdueIcon.remove();
+    }
+  }
+  
+  // 更新所在银行的统计信息
+  var bankGroup = billItem.closest('.bank-group');
+  if (bankGroup) {
+    updateBankStatsInDOM(bill.bankId);
+  }
+}
+
+// ========== 局部更新银行统计信息 ==========
+function updateBankStatsInDOM(bankId) {
+  var bankGroup = document.querySelector('.bank-group[data-bank-id="' + bankId + '"]');
+  if (!bankGroup) return;
+  
+  var now = new Date();
+  var currentMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+  
+  var bankMonthBills = [];
+  for (var i = 0; i < data.bills.length; i++) {
+    if (data.bills[i].bankId === bankId && data.bills[i].date && data.bills[i].date.indexOf(currentMonth) === 0) {
+      bankMonthBills.push(data.bills[i]);
+    }
+  }
+  
+  var bankTotal = 0, bankPaidCount = 0, bankUnpaidCount = 0;
+  for (var k = 0; k < bankMonthBills.length; k++) {
+    bankTotal += parseFloat(bankMonthBills[k].amount) || 0;
+    if (bankMonthBills[k].status === 'paid') bankPaidCount++; else bankUnpaidCount++;
+  }
+  
+  // 更新总金额
+  var totalEl = bankGroup.querySelector('.bank-total');
+  if (totalEl) {
+    totalEl.textContent = 'RM ' + bankTotal.toFixed(2);
+  }
+  
+  // 更新统计信息
+  var statsEl = bankGroup.querySelector('.bank-status-stats');
+  if (statsEl) {
+    if (bankMonthBills.length > 0) {
+      statsEl.innerHTML = '<span class="stat-paid">' + bankPaidCount + ' 已缴</span><span class="stat-unpaid">' + bankUnpaidCount + ' 未缴</span>';
+    } else {
+      statsEl.innerHTML = '<span style="font-size:0.68rem;opacity:0.4;">本月暂无</span>';
+    }
+  }
+}
+
 function render() {
   listEl.innerHTML = '';
   if (!data.banks || data.banks.length === 0) {
@@ -786,7 +935,6 @@ function render() {
 
   for (var bi = 0; bi < data.banks.length; bi++) {
     var bank = data.banks[bi];
-    // 注意：这里不再自动设置 expandedBanks[bank.id] = true
 
     var bankBills = [], bankMonthBills = [];
     for (var j = 0; j < data.bills.length; j++) {
@@ -801,6 +949,7 @@ function render() {
     var isExpanded = expandedBanks[bank.id] || false;
     var el = document.createElement('div');
     el.className = 'bank-group' + (isExpanded ? ' expanded' : '');
+    el.setAttribute('data-bank-id', bank.id);
 
     var statusStatsHtml = '';
     if (bankMonthBills.length > 0) {
@@ -843,12 +992,30 @@ function render() {
       el.querySelector('.bank-header').onclick = function(e) { 
         if (e.target.closest('.bank-del')) return; 
         expandedBanks[bankId] = !expandedBanks[bankId]; 
-        saveExpandedState(); // 保存展开状态
+        saveExpandedState();
         render(); 
       };
       el.querySelector('.bank-del').onclick = function(e) { e.stopPropagation(); showModal('确定删除「' + bankName + '」及其所有事项吗？', { icon: '🗑️', confirmText: '删除', cancelText: '取消' }).then(function(ok) { if (!ok) return; var nb = [], nbl = []; for (var i = 0; i < data.banks.length; i++) { if (data.banks[i].id !== bankId) nb.push(data.banks[i]); } data.banks = nb; for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].bankId !== bankId) nbl.push(data.bills[i]); } data.bills = nbl; delete expandedBanks[bankId]; saveExpandedState(); saveData(); showToast('已删除'); render(); }); };
       el.querySelector('.add-bill-btn').onclick = function() { editingBillId = null; billNameInput.value = ''; billAmountInput.value = ''; setStatusValue('unpaid'); openBillForm(bankId); };
-      var tgl = el.querySelectorAll('.toggle-paid'); for (var t = 0; t < tgl.length; t++) { tgl[t].onclick = function(e) { e.stopPropagation(); var bid = parseInt(this.dataset.billId); for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id === bid) { data.bills[i].status = data.bills[i].status === 'paid' ? 'unpaid' : 'paid'; break; } } saveData(); render(); }; }
+      
+      // ========== 优化后的状态切换（局部更新） ==========
+      var tgl = el.querySelectorAll('.toggle-paid'); 
+      for (var t = 0; t < tgl.length; t++) { 
+        tgl[t].onclick = function(e) { 
+          e.stopPropagation(); 
+          var bid = parseInt(this.dataset.billId); 
+          for (var i = 0; i < data.bills.length; i++) { 
+            if (data.bills[i].id === bid) { 
+              data.bills[i].status = data.bills[i].status === 'paid' ? 'unpaid' : 'paid'; 
+              break; 
+            } 
+          } 
+          saveData(); 
+          updateSummary(); // 更新顶部汇总
+          updateBillStatusInDOM(bid); // 局部更新DOM，不重新渲染整个列表
+        }; 
+      }
+      
       var edt = el.querySelectorAll('.edit-bill'); for (var e2 = 0; e2 < edt.length; e2++) { edt[e2].onclick = function(e) { e.stopPropagation(); var bid = parseInt(this.dataset.billId); var bl = null; for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id === bid) { bl = data.bills[i]; break; } } if (!bl) return; editingBillId = bid; billNameInput.value = bl.name; billAmountInput.value = bl.amount; setStatusValue(bl.status || 'unpaid'); openBillForm(bl.bankId); }; }
       var dlt = el.querySelectorAll('.del-bill'); for (var d = 0; d < dlt.length; d++) { dlt[d].onclick = function(e) { e.stopPropagation(); var bid = parseInt(this.dataset.billId); var bl = null; for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id === bid) { bl = data.bills[i]; break; } } if (!bl) return; showModal('确定删除「' + bl.name + '」吗？', { icon: '🗑️', confirmText: '删除', cancelText: '取消' }).then(function(ok) { if (!ok) return; var nbl = []; for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id !== bid) nbl.push(data.bills[i]); } data.bills = nbl; saveData(); showToast('已删除'); render(); }); }; }
     })(bank.id, bank.name);
@@ -897,7 +1064,7 @@ document.getElementById('exportBtn').onclick = function() {
   showToast('导出成功');
 };
 
-// 导入数据
+// ========== 优化后的导入数据（支持追加/替换） ==========
 var importFile = document.getElementById('importFile');
 document.getElementById('importBtn').onclick = function() { importFile.click(); };
 importFile.onchange = function(e) {
@@ -907,21 +1074,78 @@ importFile.onchange = function(e) {
     try {
       var nd = JSON.parse(ev.target.result);
       if (!nd.banks || !nd.bills) throw new Error('格式错误');
-      showModal('导入 ' + nd.banks.length + ' 银行 ' + nd.bills.length + ' 条记录？', { icon: '📥', confirmText: '导入', cancelText: '取消', confirmClass: 'primary-action' }).then(function(ok) {
-        if (!ok) { importFile.value = ''; return; }
-        data = nd; expandedBanks = {}; nextBankId = 1; nextBillId = 1;
-        for (var i = 0; i < data.banks.length; i++) { if (data.banks[i].id >= nextBankId) nextBankId = data.banks[i].id + 1; expandedBanks[data.banks[i].id] = true; }
-        for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id >= nextBillId) nextBillId = data.bills[i].id + 1; }
-        saveExpandedState(); saveData(); showToast('导入成功'); importFile.value = ''; render();
+      
+      // 使用自定义按钮：替换、追加、取消
+      showModal('发现 ' + nd.banks.length + ' 银行 ' + nd.bills.length + ' 条记录，选择导入方式：', { 
+        icon: '📥',
+        customButtons: [
+          { text: '替换数据', className: 'confirm-btn', value: 'replace' },
+          { text: '追加数据', className: 'append-btn', value: 'append' },
+          { text: '取消', className: 'cancel-btn', value: 'cancel' }
+        ]
+      }).then(function(choice) {
+        if (!choice || choice === 'cancel') { importFile.value = ''; return; }
+        
+        if (choice === 'replace') {
+          // 替换模式
+          data = nd; expandedBanks = {};
+          nextBankId = 1; nextBillId = 1;
+          for (var i = 0; i < data.banks.length; i++) { 
+            if (data.banks[i].id >= nextBankId) nextBankId = data.banks[i].id + 1; 
+            expandedBanks[data.banks[i].id] = true; 
+          }
+          for (var i = 0; i < data.bills.length; i++) { 
+            if (data.bills[i].id >= nextBillId) nextBillId = data.bills[i].id + 1; 
+          }
+          saveExpandedState(); saveData(); 
+          showToast('替换成功 ' + nd.banks.length + ' 银行 ' + nd.bills.length + ' 条记录'); 
+        } else if (choice === 'append') {
+          // 追加模式：合并数据并重新分配 ID
+          var maxBankId = nextBankId - 1;
+          var maxBillId = nextBillId - 1;
+          
+          // 建立旧 ID 到新 ID 的映射
+          var bankIdMap = {};
+          for (var i = 0; i < nd.banks.length; i++) {
+            var oldId = nd.banks[i].id;
+            nd.banks[i].id = ++maxBankId;
+            bankIdMap[oldId] = nd.banks[i].id;
+            expandedBanks[nd.banks[i].id] = true;
+          }
+          
+          for (var i = 0; i < nd.bills.length; i++) {
+            nd.bills[i].id = ++maxBillId;
+            if (bankIdMap[nd.bills[i].bankId]) {
+              nd.bills[i].bankId = bankIdMap[nd.bills[i].bankId];
+            }
+            data.bills.push(nd.bills[i]);
+          }
+          
+          for (var i = 0; i < nd.banks.length; i++) {
+            data.banks.push(nd.banks[i]);
+          }
+          
+          nextBankId = maxBankId + 1;
+          nextBillId = maxBillId + 1;
+          
+          saveExpandedState(); saveData(); 
+          showToast('追加成功 ' + nd.banks.length + ' 银行 ' + nd.bills.length + ' 条记录'); 
+        }
+        
+        importFile.value = ''; 
+        render();
       });
-    } catch(err) { showToast('导入失败'); importFile.value = ''; }
+    } catch(err) { 
+      showToast('导入失败：数据格式错误'); 
+      importFile.value = ''; 
+    }
   };
   reader.readAsText(file);
 };
 
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
-    if (modalOverlay.classList.contains('show')) { hideModal(false); return; }
+    if (modalOverlay.classList.contains('show')) { hideModal(null); return; }
     if (billFormOverlay.classList.contains('show')) { closeBillForm(); return; }
     if (bankFormOverlay.classList.contains('show')) { closeBankForm(); return; }
     if (menuOverlay.classList.contains('show')) { menuOverlay.classList.remove('show'); return; }
