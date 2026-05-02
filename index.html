@@ -337,7 +337,6 @@
   <!-- 菜单弹窗（独立浮出） -->
   <div class="menu-overlay" id="menuOverlay">
     <div class="menu-popup">
-      <div class="form-title" style="margin-bottom:4px;"></div>
       <button class="btn install-menu-btn" id="installAppBtn" style="display:none;">📱 安装应用</button>
       <button class="btn tutorial-btn" id="tutorialBtn">📖 安装到主屏幕</button>
       <button class="btn" id="exportBtn">📤 导出数据</button>
@@ -516,7 +515,31 @@ function showTutorial() {
 // ========== 注册 Service Worker ==========
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('data:application/javascript;base64,CnNlbGYuYWRkRXZlbnRMaXN0ZW5lcignaW5zdGFsbCcsIGV2ZW50ID0+IHsKICBldmVudC53YWl0VW50aWwoCiAgICBjYWNoZXMub3BlbigncGF5bWVudC1hc3Npc3RhbnQtdjEnKS50aGVuKGNhY2hlID0+IHsKICAgICAgcmV0dXJuIGNhY2hlLmFkZEFsbChbCiAgICAgICAgJy4vJywKICAgICAgICAnL2luZGV4Lmh0bWwnLAogICAgICAgICcvaWNvbi0xOTIucG5nJywKICAgICAgICAnL2ljb24tNTEyLnBuZycKICAgICAgXSk7CiAgICB9KQogICk7Cn0pOwoKc2VsZi5hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsIGV2ZW50ID0+IHsKICBldmVudC5yZXNwb25kV2l0aCgKICAgIGNhY2hlcy5tYXRjaChldmVudC5yZXF1ZXN0KS50aGVuKHJlc3BvbnNlID0+IHsKICAgICAgcmV0dXJuIHJlc3BvbnNlIHx8IGZldGNoKGV2ZW50LnJlcXVlc3QpOwogICAgfSkKICApOwp9KTs=')
+    const swCode = `
+      self.addEventListener('install', event => {
+        event.waitUntil(
+          caches.open('payment-assistant-v1').then(cache => {
+            return cache.addAll([
+              './',
+              '/index.html',
+              '/icon-192.png',
+              '/icon-512.png'
+            ]);
+          })
+        );
+      });
+
+      self.addEventListener('fetch', event => {
+        event.respondWith(
+          caches.match(event.request).then(response => {
+            return response || fetch(event.request);
+          })
+        );
+      });
+    `;
+    const blob = new Blob([swCode], { type: 'application/javascript' });
+    const swUrl = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(swUrl)
       .then(registration => {
         console.log('Service Worker 注册成功:', registration.scope);
       })
