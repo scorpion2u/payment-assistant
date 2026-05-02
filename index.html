@@ -223,6 +223,89 @@
     .menu-popup .btn.install-menu-btn:active {
       box-shadow: inset 4px 4px 8px rgba(0,0,0,0.3), inset -4px -4px 8px rgba(255,255,255,0.4);
     }
+    .menu-popup .btn.tutorial-btn {
+      background: linear-gradient(145deg, #fef3c7, #fde68a);
+      color: #92400e;
+      box-shadow: 6px 6px 12px rgba(0,0,0,0.1), -4px -4px 10px rgba(255,255,255,0.6);
+    }
+
+    /* ===== 教程弹窗样式 ===== */
+    .tutorial-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 400;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .tutorial-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .tutorial-popup {
+      border-radius: 28px;
+      padding: 24px 20px 20px;
+      background: linear-gradient(145deg, #e8edf3, #d2d8e4);
+      box-shadow: 20px 20px 40px rgba(0,0,0,0.2), -12px -12px 30px rgba(255,255,255,0.9);
+      max-width: 380px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      text-align: left;
+      transform: scale(0.9);
+      transition: transform 0.3s;
+    }
+    .tutorial-overlay.show .tutorial-popup {
+      transform: scale(1);
+    }
+    .tutorial-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    .tutorial-step:last-child {
+      border-bottom: none;
+    }
+    .step-number {
+      width: 32px;
+      height: 32px;
+      background: #2c3e50;
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+    .step-content {
+      flex: 1;
+      font-size: 0.9rem;
+      color: #333;
+      line-height: 1.5;
+    }
+    .step-content strong {
+      color: #2c3e50;
+    }
+    .browser-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .browser-badge.safari { background: #007aff; color: #fff; }
+    .browser-badge.chrome { background: #4285f4; color: #fff; }
+    .browser-badge.samsung { background: #1428a0; color: #fff; }
+    .browser-badge.other { background: #666; color: #fff; }
   </style>
 </head>
 <body>
@@ -256,6 +339,7 @@
     <div class="menu-popup">
       <div class="form-title" style="margin-bottom:4px;">📋 菜单</div>
       <button class="btn install-menu-btn" id="installAppBtn" style="display:none;">📱 安装应用</button>
+      <button class="btn tutorial-btn" id="tutorialBtn">📖 安装教程</button>
       <button class="btn" id="exportBtn">📤 导出数据</button>
       <button class="btn" id="importBtn">📥 导入数据</button>
       <button class="btn" id="clearAllBtn" style="color:#c0392b;">🧹 清空所有数据</button>
@@ -263,6 +347,15 @@
     </div>
   </div>
   <input type="file" id="importFile" accept=".json" style="display:none;">
+
+  <!-- 安装教程弹窗 -->
+  <div class="tutorial-overlay" id="tutorialOverlay">
+    <div class="tutorial-popup">
+      <div class="form-title" style="margin-bottom:12px;">📖 如何安装到主屏幕</div>
+      <div id="tutorialContent"></div>
+      <button class="btn" id="tutorialCloseBtn" style="margin-top:12px;width:100%;">关闭</button>
+    </div>
+  </div>
 
   <div class="form-overlay" id="bankFormOverlay">
     <div class="form-panel">
@@ -312,6 +405,114 @@
 </div>
 
 <script>
+// ========== 检测浏览器类型 ==========
+function detectBrowser() {
+  const ua = navigator.userAgent;
+  if (/iPhone|iPad|iPod/.test(ua)) return 'ios';
+  if (/Safari/.test(ua) && !/Chrome/.test(ua) && !/Android/.test(ua)) return 'safari';
+  if (/Chrome/.test(ua) && /Android/.test(ua)) return 'android-chrome';
+  if (/SamsungBrowser/.test(ua)) return 'samsung';
+  if (/Edg/.test(ua)) return 'edge';
+  if (/Firefox/.test(ua)) return 'firefox';
+  return 'other';
+}
+
+// ========== 生成安装教程 ==========
+function showTutorial() {
+  const browser = detectBrowser();
+  let tutorialHTML = '';
+  
+  if (browser === 'ios' || browser === 'safari') {
+    // Safari / iOS 教程
+    tutorialHTML = `
+      <div class="browser-badge safari">🍎 Safari 浏览器</div>
+      <div class="tutorial-step">
+        <div class="step-number">1</div>
+        <div class="step-content">点击浏览器底部中间的 <strong>分享按钮</strong>（<span style="font-size:1.1rem;">⎋</span> 图标）</div>
+      </div>
+      <div class="tutorial-step">
+        <div class="step-number">2</div>
+        <div class="step-content">在弹出菜单中向下滑动，找到 <strong>「添加到主屏幕」</strong></div>
+      </div>
+      <div class="tutorial-step">
+        <div class="step-number">3</div>
+        <div class="step-content">点击右上角 <strong>「添加」</strong>，应用图标就会出现在主屏幕上</div>
+      </div>
+    `;
+  } else if (browser === 'android-chrome') {
+    // Android Chrome 教程
+    tutorialHTML = `
+      <div class="browser-badge chrome">🌐 Chrome 浏览器</div>
+      <div class="tutorial-step">
+        <div class="step-number">1</div>
+        <div class="step-content">点击浏览器右上角的 <strong>三个点菜单 ⋮</strong></div>
+      </div>
+      <div class="tutorial-step">
+        <div class="step-number">2</div>
+        <div class="step-content">选择 <strong>「添加到主屏幕」</strong> 或 <strong>「安装应用」</strong></div>
+      </div>
+      <div class="tutorial-step">
+        <div class="step-number">3</div>
+        <div class="step-content">在弹出的对话框中点击 <strong>「安装」</strong>，应用就会出现在主屏幕上</div>
+      </div>
+    `;
+  } else if (browser === 'samsung') {
+    // 三星浏览器教程
+    tutorialHTML = `
+      <div class="browser-badge samsung">📱 三星浏览器</div>
+      <div class="tutorial-step">
+        <div class="step-number">1</div>
+        <div class="step-content">点击底部导航栏的 <strong>三条横线菜单 ☰</strong></div>
+      </div>
+      <div class="tutorial-step">
+        <div class="step-number">2</div>
+        <div class="step-content">选择 <strong>「添加页面到」→「主屏幕」</strong></div>
+      </div>
+      <div class="tutorial-step">
+        <div class="step-number">3</div>
+        <div class="step-content">确认添加后，应用图标就会出现在主屏幕上</div>
+      </div>
+    `;
+  } else if (browser === 'edge') {
+    // Edge 浏览器教程
+    tutorialHTML = `
+      <div class="browser-badge other">🔵 Edge 浏览器</div>
+      <div class="tutorial-step">
+        <div class="step-number">1</div>
+        <div class="step-content">点击底部菜单栏的 <strong>三个点 ⋯</strong></div>
+      </div>
+      <div class="tutorial-step">
+        <div class="step-number">2</div>
+        <div class="step-content">选择 <strong>「添加到手机」</strong> 或 <strong>「添加到主屏幕」</strong></div>
+      </div>
+      <div class="tutorial-step">
+        <div class="step-number">3</div>
+        <div class="step-content">确认后应用图标就会出现在主屏幕上</div>
+      </div>
+    `;
+  } else {
+    // 其他浏览器通用教程
+    tutorialHTML = `
+      <div class="browser-badge other">🌐 通用教程</div>
+      <div class="tutorial-step">
+        <div class="step-number">1</div>
+        <div class="step-content">打开浏览器菜单（通常在右上角或底部）</div>
+      </div>
+      <div class="tutorial-step">
+        <div class="step-number">2</div>
+        <div class="step-content">找到 <strong>「添加到主屏幕」</strong> 或 <strong>「安装」</strong> 选项</div>
+      </div>
+      <div class="tutorial-step">
+        <div class="step-number">3</div>
+        <div class="step-content">如果找不到，可以尝试使用 <strong>Chrome 或 Safari</strong> 浏览器打开</div>
+      </div>
+    `;
+  }
+
+  document.getElementById('tutorialContent').innerHTML = tutorialHTML;
+  document.getElementById('tutorialOverlay').classList.add('show');
+}
+
 // ========== 注册 Service Worker ==========
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -368,6 +569,26 @@ menuCloseBtn.onclick = function() {
 menuOverlay.addEventListener('click', function(e) {
   if (e.target === menuOverlay) {
     menuOverlay.classList.remove('show');
+  }
+});
+
+// ========== 教程弹窗控制 ==========
+var tutorialOverlay = document.getElementById('tutorialOverlay');
+var tutorialBtn = document.getElementById('tutorialBtn');
+var tutorialCloseBtn = document.getElementById('tutorialCloseBtn');
+
+tutorialBtn.onclick = function() {
+  menuOverlay.classList.remove('show');
+  showTutorial();
+};
+
+tutorialCloseBtn.onclick = function() {
+  tutorialOverlay.classList.remove('show');
+};
+
+tutorialOverlay.addEventListener('click', function(e) {
+  if (e.target === tutorialOverlay) {
+    tutorialOverlay.classList.remove('show');
   }
 });
 
@@ -657,6 +878,7 @@ document.addEventListener('keydown', function(e) {
     if (billFormOverlay.classList.contains('show')) { closeBillForm(); return; }
     if (bankFormOverlay.classList.contains('show')) { closeBankForm(); return; }
     if (menuOverlay.classList.contains('show')) { menuOverlay.classList.remove('show'); return; }
+    if (tutorialOverlay.classList.contains('show')) { tutorialOverlay.classList.remove('show'); return; }
   }
 });
 
