@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>每月缴款</title>
+
+<style>
+*{
+  margin:0;padding:0;box-sizing:border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+*:focus{outline:none;}
+*:focus-visible{outline:2px solid #999;outline-offset:2px;}
+
+body{
+  font-family:'Inter',system-ui;
+  background:linear-gradient(145deg,#e8edf3,#d2d8e4);
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  min-height:100vh;
+  padding:16px;
+}
+
+.app{
+  width:100%;
+  max-width:440px;
+  border-radius:32px;
+  padding:20px;
+  background:linear-gradient(145deg,#e8edf3,#d2d8e4);
+  box-shadow:
+    20px 20px 40px rgba(0,0,0,0.15),
+    -15px -15px 35px rgba(255,255,255,0.9);
+}
+
+.header-card{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px;
+  border-radius:26px;
+  margin-bottom:14px;
+  background:linear-gradient(145deg,#e8edf3,#d2d8e4);
+  box-shadow:
+    12px 12px 24px rgba(0,0,0,0.12),
+    -8px -8px 20px rgba(255,255,255,0.9);
+}
+
+.header-left{display:flex;align-items:center;gap:12px;}
+.app-title{font-weight:700;font-size:1.2rem;}
+
+/* ===== 双卡片汇总 ===== */
+.summary-row{
+  display:flex;
+  gap:10px;
+  margin-bottom:14px;
+}
+
+.summary-card{
+  flex:1;
+  padding:12px 14px;
+  border-radius:22px;
+  box-shadow:
+    8px 8px 16px rgba(0,0,0,0.1),
+    -6px -6px 14px rgba(255,255,255,0.9);
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.summary-card.unpaid-card{background:linear-gradient(145deg,#fef5f5,#fce4e4);}
+.summary-card.paid-card{background:linear-gradient(145deg,#f5fdf7,#d4edda);}
+
+.summary-card-label{
+  font-size:0.75rem;
+  font-weight:600;
+  opacity:0.7;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.summary-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.summary-dot.red{background:#e07b7b;}
+.summary-dot.green{background:#8fcf91;}
+
+.summary-card-amount{
+  font-size:1.15rem;
+  font-weight:800;
+  color:#2c3e50;
+}
+
+.status-badge{
+  display:inline-block;
+  padding:3px 8px;
+  border-radius:12px;
+  font-size:0.65rem;
+  font-weight:600;
+  margin-left:6px;
+}
+.status-badge.paid{background:#d4edda;color:#155724;}
+.status-badge.unpaid{background:#f8d7da;color:#721c24;}
+
+.btn{
+  border:none;border-radius:20px;
+  padding:10px 18px;cursor:pointer;
+  background:linear-gradient(145deg,#e8edf3,#d2d8e4);
+  box-shadow:
+    6px 6px 12px rgba(0,0,0,0.12),
+    -6px -6px 12px rgba(255,255,255,0.9);
+  transition:.2s;font-weight:600;user-select:none;
+}
+.btn:active{
+  transform:scale(.96);
+  box-shadow:
+    inset 6px 6px 12px rgba(0,0,0,0.15),
+    inset -6px -6px 12px rgba(255,255,255,0.8);
+}
+.btn.primary{
+  width:42px;height:42px;padding:0;border-radius:50%;font-size:1.4rem;
+}
+
+.list{margin-top:10px;display:flex;flex-direction:column;gap:14px;}
+
+.bank-group{
+  border-radius:22px;
+  background:linear-gradient(145deg,#e8edf3,#d2d8e4);
+  box-shadow:
+    8px 8px 16px rgba(0,0,0,0.1),
+    -6px -6px 14px rgba(255,255,255,0.9);
+  overflow:hidden;
+}
+
+/* 银行头部 - 两行布局 */
+.bank-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  padding:14px 16px;
+  cursor:pointer;
+  user-select:none;
+  gap:8px;
+}
+
+.bank-header-main{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex:1;
+  min-width:0;
+}
+
+.bank-icon{font-size:1.4rem;flex-shrink:0;}
+
+.bank-header-info{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  flex:1;
+  min-width:0;
+}
+
+.bank-name-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.bank-name{
+  font-weight:700;
+  font-size:1rem;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.bank-total{
+  font-weight:800;
+  font-size:1rem;
+  flex-shrink:0;
+}
+
+/* 状态统计条 */
+.bank-status-stats{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:0.68rem;
+  font-weight:600;
+}
+
+.bank-status-stats .stat-paid{
+  color:#155724;
+  background:#d4edda;
+  padding:2px 8px;
+  border-radius:10px;
+}
+
+.bank-status-stats .stat-unpaid{
+  color:#721c24;
+  background:#f8d7da;
+  padding:2px 8px;
+  border-radius:10px;
+}
+
+.bank-header-actions{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-shrink:0;
+  padding-top:2px;
+}
+
+.collapse-arrow{
+  font-size:0.65rem;
+  opacity:0.4;
+  transition:transform 0.3s;
+}
+
+.bank-group.expanded .collapse-arrow{transform:rotate(180deg);}
+
+.bank-body{max-height:0;overflow:hidden;transition:max-height 0.4s ease;}
+.bank-group.expanded .bank-body{max-height:2000px;}
+
+.bank-items{padding:0 12px 12px;display:flex;flex-direction:column;gap:8px;}
+
+.bill-item{
+  display:flex;
+  align-items:center;
+  padding:10px 14px;
+  border-radius:18px;
+  background:linear-gradient(145deg,#dfe4eb,#cfd5de);
+  box-shadow:
+    inset 2px 2px 4px rgba(0,0,0,0.06),
+    inset -2px -2px 4px rgba(255,255,255,0.5);
+  gap:8px;
+}
+
+.bill-item.overdue{background:linear-gradient(145deg,#fce4e4,#f5d0d0);}
+
+.bill-info{display:flex;flex-direction:column;gap:1px;flex:1;min-width:0;}
+.bill-name{font-weight:700;font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bill-amount{font-size:1rem;font-weight:800;}
+
+.bill-actions{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+
+.icon-btn{
+  width:30px;height:30px;
+  border:none;border-radius:50%;
+  cursor:pointer;
+  background:linear-gradient(145deg,#e8edf3,#d2d8e4);
+  box-shadow:
+    2px 2px 4px rgba(0,0,0,0.08),
+    -2px -2px 4px rgba(255,255,255,0.8);
+  transition:.2s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  user-select:none;
+}
+.icon-btn:active{
+  transform:scale(.9);
+  box-shadow:
+    inset 2px 2px 4px rgba(0,0,0,0.12),
+    inset -2px -2px 4px rgba(255,255,255,0.6);
+}
+
+.icon-dot{width:14px;height:14px;border-radius:50%;transition:.2s;}
+.icon-dot.unpaid{background:#e07b7b;box-shadow:inset 2px 2px 3px rgba(0,0,0,0.15),inset -2px -2px 3px rgba(255,255,255,0.2);}
+.icon-dot.paid{background:#8fcf91;box-shadow:inset 2px 2px 3px rgba(0,0,0,0.12),inset -2px -2px 3px rgba(255,255,255,0.2);}
+
+.icon-edit{
+  width:0;height:0;
+  border-top:5px solid transparent;
+  border-bottom:5px solid transparent;
+  border-left:9px solid #9a9a9a;
+  margin-left:1px;
+}
+
+.icon-del{width:12px;height:12px;position:relative;}
+.icon-del::before,.icon-del::after{
+  content:"";position:absolute;top:50%;left:50%;
+  width:1.5px;height:10px;background:#a0a0a0;border-radius:1px;
+}
+.icon-del::before{transform:translate(-50%,-50%) rotate(45deg);}
+.icon-del::after{transform:translate(-50%,-50%) rotate(-45deg);}
+
+.add-bill-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  padding:8px;
+  border-radius:16px;
+  cursor:pointer;
+  font-size:0.8rem;
+  font-weight:600;
+  color:#888;
+  background:linear-gradient(145deg,#dfe4eb,#cfd5de);
+  box-shadow:
+    inset 2px 2px 4px rgba(0,0,0,0.04),
+    inset -2px -2px 4px rgba(255,255,255,0.5);
+  transition:.2s;
+  user-select:none;
+}
+.add-bill-btn:active{
+  box-shadow:
+    inset 4px 4px 6px rgba(0,0,0,0.1),
+    inset -4px -4px 6px rgba(255,255,255,0.6);
+}
+
+.empty-bank-hint{text-align:center;font-size:0.75rem;opacity:0.4;padding:8px 0;}
+
+.form-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.3);
+  display:flex;align-items:center;justify-content:center;
+  z-index:200;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.3s;
+}
+.form-overlay.show{opacity:1;pointer-events:auto;}
+
+.form-panel{
+  border-radius:28px;
+  padding:24px 20px 20px;
+  background:linear-gradient(145deg,#e8edf3,#d2d8e4);
+  box-shadow:
+    20px 20px 40px rgba(0,0,0,0.2),
+    -12px -12px 30px rgba(255,255,255,0.9);
+  max-width:360px;width:90%;
+  display:flex;flex-direction:column;gap:12px;
+  transform:scale(0.9);transition:transform 0.3s;
+}
+.form-overlay.show .form-panel{transform:scale(1);}
+.form-title{font-weight:700;font-size:1.1rem;color:#333;text-align:center;}
+
+.custom-select-wrapper{position:relative;display:block;user-select:none;}
+.custom-select-display{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px;border-radius:18px;
+  background:linear-gradient(145deg,#e8edf3,#d2d8e4);
+  box-shadow:
+    inset 4px 4px 8px rgba(0,0,0,0.08),
+    inset -4px -4px 8px rgba(255,255,255,0.7);
+  font-weight:600;color:#333;cursor:pointer;
+  font-size:0.95rem;transition:box-shadow 0.2s;font-family:inherit;
+}
+.custom-select-display.open{
+  box-shadow:
+    inset 6px 6px 12px rgba(0,0,0,0.12),
+    inset -6px -6px 12px rgba(255,255,255,0.8)!important;
+}
+.custom-select-display .arrow{font-size:0.7rem;opacity:0.6;transition:transform 0.2s;}
+.custom-select-display.open .arrow{transform:rotate(180deg);}
+.custom-select-dropdown{
+  position:absolute;top:calc(100% + 6px);left:0;right:0;
+  background:#e8edf3;border-radius:18px;
+  box-shadow:
+    12px 12px 24px rgba(0,0,0,0.18),
+    -8px -8px 20px rgba(255,255,255,0.95);
+  z-index:100;display:none;overflow:hidden;padding:6px;
+}
+.custom-select-dropdown.open{display:block;}
+.custom-select-option{
+  padding:10px 14px;cursor:pointer;font-weight:600;
+  color:#333;font-size:0.95rem;border-radius:14px;
+  transition:box-shadow 0.15s,background 0.15s;
+}
+.custom-select-option:hover{
+  box-shadow:
+    inset 2px 2px 5px rgba(0,0,0,0.08),
+    inset -2px -2px 5px rgba(255,255,255,0.5);
+}
+.custom-select-option.selected{
+  background:linear-gradient(145deg,#d0d7e0,#bcc2cb)!important;
+  color:#333!important;
+  box-shadow:
+    inset 3px 3px 6px rgba(0,0,0,0.12),
+    inset -3px -3px 6px rgba(255,255,255,0.6)!important;
+  font-weight:700;
+}
+
+.modal-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.3);
+  display:flex;align-items:center;justify-content:center;
+  z-index:300;
+  opacity:0;pointer-events:none;transition:opacity 0.3s;
+}
+.modal-overlay.show{opacity:1;pointer-events:auto;}
+.modal-box{
+  border-radius:28px;padding:24px 20px 20px;
+  background:linear-gradient(145deg,#e8edf3,#d2d8e4);
+  box-shadow:
+    20px 20px 40px rgba(0,0,0,0.2),
+    -12px -12px 30px rgba(255,255,255,0.9);
+  max-width:320px;width:90%;text-align:center;
+  transform:scale(0.9);transition:transform 0.3s;
+}
+.modal-overlay.show .modal-box{transform:scale(1);}
+.modal-icon{font-size:2.5rem;margin-bottom:12px;opacity:0.8;}
+.modal-message{font-weight:600;font-size:1rem;margin-bottom:20px;color:#333;line-height:1.5;}
+.modal-buttons{display:flex;gap:10px;}
+.modal-buttons .btn{flex:1;padding:12px;}
+.modal-buttons .btn.confirm-btn{color:#c0392b;font-weight:700;}
+.modal-buttons .btn.confirm-btn.primary-action{color:#2c7a4a;font-weight:700;}
+
+input{
+  border:none;padding:12px;border-radius:18px;
+  background:linear-gradient(145deg,#e8edf3,#d2d8e4);
+  box-shadow:
+    inset 4px 4px 8px rgba(0,0,0,0.08),
+    inset -4px -4px 8px rgba(255,255,255,0.7);
+  font-size:0.95rem;font-family:inherit;
+}
+
+.row-buttons{display:flex;gap:10px;margin-top:6px;}
+.row-buttons .btn{flex:1;}
+
+.empty-state{
+  text-align:center;padding:30px 20px;border-radius:20px;
+}
+.empty-state-icon{font-size:3rem;margin-bottom:12px;opacity:0.4;}
+.empty-state-text{font-weight:600;opacity:0.5;margin-bottom:4px;}
+.empty-state-hint{font-size:0.8rem;opacity:0.35;}
+
+.toast{
+  position:fixed;top:24px;left:50%;transform:translateX(-50%);
+  padding:10px 24px;border-radius:24px;
+  background:#2c3e50;color:#fff;
+  font-size:0.85rem;font-weight:600;
+  opacity:0;transition:opacity .3s;
+  pointer-events:none;z-index:400;
+}
+.toast.show{opacity:1;}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="header-card">
+    <div class="header-left">
+      <div class="app-title">每月缴款</div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn primary" id="addBankBtn" title="添加银行">＋</button>
+      <button class="btn" id="menuBtn" title="菜单">☰</button>
+    </div>
+  </div>
+
+  <div class="summary-row">
+    <div class="summary-card unpaid-card">
+      <div class="summary-card-label"><span class="summary-dot red"></span> 未缴合计 · <span id="unpaidCount">0</span>笔</div>
+      <div class="summary-card-amount" id="unpaidAmount">¥ 0.00</div>
+    </div>
+    <div class="summary-card paid-card">
+      <div class="summary-card-label"><span class="summary-dot green"></span> 已缴合计 · <span id="paidCount">0</span>笔</div>
+      <div class="summary-card-amount" id="paidAmount">¥ 0.00</div>
+    </div>
+  </div>
+
+  <div id="list" class="list"></div>
+
+  <div id="menuPanel" style="display:none;margin-top:12px;">
+    <div style="padding:16px;border-radius:22px;background:linear-gradient(145deg,#e8edf3,#d2d8e4);display:flex;flex-direction:column;gap:12px;box-shadow:inset 4px 4px 8px rgba(0,0,0,0.08),inset -4px -4px 8px rgba(255,255,255,0.7);">
+      <button id="exportBtn" class="btn">📤 导出数据</button>
+      <button id="importBtn" class="btn">📥 导入数据</button>
+      <button id="clearAllBtn" class="btn" style="color:#c0392b;">🧹 清空所有数据</button>
+    </div>
+    <input type="file" id="importFile" accept=".json" style="display:none;">
+  </div>
+
+  <div class="form-overlay" id="bankFormOverlay">
+    <div class="form-panel">
+      <div class="form-title" id="bankFormTitle">添加银行</div>
+      <input id="bankNameInput" placeholder="银行名称（必填）">
+      <div class="row-buttons">
+        <button id="bankSaveBtn" class="btn">保存</button>
+        <button id="bankCancelBtn" class="btn">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-overlay" id="billFormOverlay">
+    <div class="form-panel">
+      <div class="form-title" id="billFormTitle">新增缴款</div>
+      <input id="billNameInput" placeholder="费用名称（必填）">
+      <input id="billAmountInput" type="number" placeholder="金额（必填）" step="0.01" min="0">
+      <div class="custom-select-wrapper" id="statusSelectWrapper">
+        <div class="custom-select-display" id="statusSelectDisplay">
+          <span id="statusSelectText">未缴</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="custom-select-dropdown" id="statusSelectDropdown">
+          <div class="custom-select-option selected" data-value="unpaid">未缴</div>
+          <div class="custom-select-option" data-value="paid">已缴</div>
+        </div>
+      </div>
+      <div class="row-buttons">
+        <button id="billSaveBtn" class="btn">保存</button>
+        <button id="billCancelBtn" class="btn">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+      <div class="modal-icon" id="modalIcon">⚠️</div>
+      <div class="modal-message" id="modalMessage"></div>
+      <div class="modal-buttons">
+        <button class="btn cancel-btn" id="modalCancel">取消</button>
+        <button class="btn confirm-btn" id="modalConfirm">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+</div>
+
+<script>
+var STORAGE_KEY = 'monthly_bank_data';
+var data = { banks: [], bills: [] };
+var nextBankId = 1;
+var nextBillId = 1;
+var editingBillId = null;
+var editingBankId = null;
+var currentBillStatus = 'unpaid';
+var currentBankId = null;
+var expandedBanks = {};
+
+var listEl = document.getElementById('list');
+var toast = document.getElementById('toast');
+var menuBtn = document.getElementById('menuBtn');
+var menuPanel = document.getElementById('menuPanel');
+var bankFormOverlay = document.getElementById('bankFormOverlay');
+var bankNameInput = document.getElementById('bankNameInput');
+var bankSaveBtn = document.getElementById('bankSaveBtn');
+var bankCancelBtn = document.getElementById('bankCancelBtn');
+var billFormOverlay = document.getElementById('billFormOverlay');
+var billNameInput = document.getElementById('billNameInput');
+var billAmountInput = document.getElementById('billAmountInput');
+var billSaveBtn = document.getElementById('billSaveBtn');
+var billCancelBtn = document.getElementById('billCancelBtn');
+var statusSelectDisplay = document.getElementById('statusSelectDisplay');
+var statusSelectText = document.getElementById('statusSelectText');
+var statusSelectDropdown = document.getElementById('statusSelectDropdown');
+var statusOptions = statusSelectDropdown.querySelectorAll('.custom-select-option');
+var modalOverlay = document.getElementById('modalOverlay');
+var modalIcon = document.getElementById('modalIcon');
+var modalMessage = document.getElementById('modalMessage');
+var modalCancel = document.getElementById('modalCancel');
+var modalConfirm = document.getElementById('modalConfirm');
+
+function loadData() {
+  var saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try { data = JSON.parse(saved); if (!data.banks) data.banks = []; if (!data.bills) data.bills = []; }
+    catch(e) { data = { banks: [], bills: [] }; }
+  }
+  nextBankId = 1;
+  for (var i = 0; i < data.banks.length; i++) { if (data.banks[i].id >= nextBankId) nextBankId = data.banks[i].id + 1; }
+  nextBillId = 1;
+  for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id >= nextBillId) nextBillId = data.bills[i].id + 1; }
+}
+function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+
+var toastTimer;
+function showToast(msg) {
+  toast.textContent = msg; toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function() { toast.classList.remove('show'); }, 1800);
+}
+
+var modalResolve = null;
+function showModal(message, options) {
+  options = options || {};
+  return new Promise(function(resolve) {
+    modalResolve = resolve; modalMessage.textContent = message;
+    modalIcon.textContent = options.icon || '⚠️';
+    modalConfirm.className = 'btn confirm-btn' + (options.confirmClass ? ' ' + options.confirmClass : '');
+    modalConfirm.textContent = options.confirmText || '确认';
+    modalCancel.textContent = options.cancelText || '取消';
+    modalCancel.style.display = options.showCancel === false ? 'none' : '';
+    modalOverlay.classList.add('show');
+  });
+}
+function hideModal(result) { modalOverlay.classList.remove('show'); if (modalResolve) { modalResolve(result); modalResolve = null; } }
+modalConfirm.onclick = function() { hideModal(true); };
+modalCancel.onclick = function() { hideModal(false); };
+modalOverlay.addEventListener('click', function(e) { if (e.target === modalOverlay) hideModal(false); });
+
+statusSelectDisplay.addEventListener('click', function(e) {
+  e.stopPropagation();
+  var isOpen = statusSelectDropdown.classList.contains('open');
+  var allDd = document.querySelectorAll('.custom-select-dropdown.open');
+  for (var i = 0; i < allDd.length; i++) { allDd[i].classList.remove('open'); if (allDd[i].previousElementSibling) allDd[i].previousElementSibling.classList.remove('open'); }
+  if (!isOpen) { statusSelectDropdown.classList.add('open'); statusSelectDisplay.classList.add('open'); }
+  else { statusSelectDropdown.classList.remove('open'); statusSelectDisplay.classList.remove('open'); }
+});
+for (var s = 0; s < statusOptions.length; s++) {
+  statusOptions[s].addEventListener('click', function(e) {
+    e.stopPropagation();
+    for (var i = 0; i < statusOptions.length; i++) statusOptions[i].classList.remove('selected');
+    this.classList.add('selected'); statusSelectText.textContent = this.textContent; currentBillStatus = this.dataset.value;
+    statusSelectDropdown.classList.remove('open'); statusSelectDisplay.classList.remove('open');
+  });
+}
+document.addEventListener('click', function() { statusSelectDropdown.classList.remove('open'); statusSelectDisplay.classList.remove('open'); });
+function setStatusValue(value) {
+  currentBillStatus = value;
+  for (var i = 0; i < statusOptions.length; i++) { statusOptions[i].classList.remove('selected'); if (statusOptions[i].dataset.value === value) { statusOptions[i].classList.add('selected'); statusSelectText.textContent = statusOptions[i].textContent; } }
+}
+
+menuBtn.onclick = function(e) { e.stopPropagation(); menuPanel.style.display = menuPanel.style.display === 'none' ? 'block' : 'none'; };
+document.addEventListener('click', function(e) { if (!menuPanel.contains(e.target) && !menuBtn.contains(e.target)) { menuPanel.style.display = 'none'; } });
+
+function openBankForm() { bankFormOverlay.classList.add('show'); setTimeout(function() { bankNameInput.focus(); }, 150); }
+function closeBankForm() { bankFormOverlay.classList.remove('show'); editingBankId = null; }
+bankFormOverlay.addEventListener('click', function(e) { if (e.target === bankFormOverlay) closeBankForm(); });
+bankCancelBtn.onclick = closeBankForm;
+
+bankSaveBtn.onclick = function() {
+  var name = bankNameInput.value.trim();
+  if (!name) { showToast('请输入银行名称'); return; }
+  if (editingBankId) { for (var i = 0; i < data.banks.length; i++) { if (data.banks[i].id === editingBankId) { data.banks[i].name = name; break; } } }
+  else { data.banks.push({ id: nextBankId, name: name }); expandedBanks[nextBankId] = true; nextBankId++; }
+  saveData(); editingBankId = null; bankNameInput.value = ''; closeBankForm(); showToast('银行已保存'); render();
+};
+
+function openBillForm(bankId) { currentBankId = bankId; billFormOverlay.classList.add('show'); setTimeout(function() { billNameInput.focus(); }, 150); }
+function closeBillForm() { billFormOverlay.classList.remove('show'); editingBillId = null; currentBankId = null; }
+billFormOverlay.addEventListener('click', function(e) { if (e.target === billFormOverlay) closeBillForm(); });
+billCancelBtn.onclick = closeBillForm;
+
+billSaveBtn.onclick = function() {
+  var name = billNameInput.value.trim();
+  var amount = billAmountInput.value;
+  if (!name) { showToast('请输入费用名称'); return; }
+  if (!amount || parseFloat(amount) < 0) { showToast('请输入有效金额'); return; }
+  var finalDate;
+  if (editingBillId) { for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id === editingBillId) { finalDate = data.bills[i].date || ''; break; } } }
+  else { var now = new Date(); finalDate = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0'); }
+  if (editingBillId) { for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id === editingBillId) { data.bills[i].name = name; data.bills[i].amount = parseFloat(amount).toFixed(2); data.bills[i].status = currentBillStatus; data.bills[i].date = finalDate; break; } } }
+  else { data.bills.push({ id: nextBillId, bankId: currentBankId, name: name, amount: parseFloat(amount).toFixed(2), date: finalDate, status: currentBillStatus }); nextBillId++; }
+  saveData(); editingBillId = null; currentBankId = null; billNameInput.value = ''; billAmountInput.value = ''; closeBillForm(); showToast('已保存'); render();
+};
+
+function render() {
+  listEl.innerHTML = '';
+  if (!data.banks || data.banks.length === 0) {
+    listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏦</div><div class="empty-state-text">暂无银行</div><div class="empty-state-hint">点击 ＋ 添加银行分类</div></div>';
+    updateSummary(); return;
+  }
+  data.banks.sort(function(a, b) { return a.id - b.id; });
+  data.bills.sort(function(a, b) { return a.id - b.id; });
+  updateSummary();
+
+  var now = new Date();
+  var currentMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+
+  for (var bi = 0; bi < data.banks.length; bi++) {
+    var bank = data.banks[bi];
+    if (!(bank.id in expandedBanks)) { expandedBanks[bank.id] = true; }
+
+    var bankBills = [], bankMonthBills = [];
+    for (var j = 0; j < data.bills.length; j++) {
+      if (data.bills[j].bankId === bank.id) { bankBills.push(data.bills[j]); if (data.bills[j].date && data.bills[j].date.indexOf(currentMonth) === 0) { bankMonthBills.push(data.bills[j]); } }
+    }
+    var bankTotal = 0, bankPaidCount = 0, bankUnpaidCount = 0;
+    for (var k = 0; k < bankMonthBills.length; k++) {
+      bankTotal += parseFloat(bankMonthBills[k].amount) || 0;
+      if (bankMonthBills[k].status === 'paid') bankPaidCount++; else bankUnpaidCount++;
+    }
+
+    var isExpanded = expandedBanks[bank.id];
+    var el = document.createElement('div');
+    el.className = 'bank-group' + (isExpanded ? ' expanded' : '');
+
+    var statusStatsHtml = '';
+    if (bankMonthBills.length > 0) {
+      statusStatsHtml = '<span class="stat-paid">' + bankPaidCount + ' 已缴</span><span class="stat-unpaid">' + bankUnpaidCount + ' 未缴</span>';
+    } else {
+      statusStatsHtml = '<span style="font-size:0.68rem;opacity:0.4;">本月暂无</span>';
+    }
+
+    var billsHtml = '';
+    for (var m = 0; m < bankBills.length; m++) {
+      var b = bankBills[m];
+      var today = new Date().toISOString().split('T')[0];
+      var isOverdue = b.status === 'unpaid' && b.date && b.date < today;
+      var statusText = b.status === 'paid' ? '已缴' : '未缴';
+      var statusClass = b.status === 'paid' ? 'paid' : 'unpaid';
+      billsHtml += '<div class="bill-item' + (isOverdue ? ' overdue' : '') + '" data-bill-id="' + b.id + '">' +
+        '<div class="bill-info"><div class="bill-name">' + escapeHtml(b.name) + '<span class="status-badge ' + statusClass + '">' + statusText + '</span>' + (isOverdue ? '<span style="font-size:0.6rem;color:#c0392b;">⚠</span>' : '') +
+        '</div><div class="bill-amount">¥ ' + parseFloat(b.amount).toFixed(2) + '</div></div>' +
+        '<div class="bill-actions"><button class="icon-btn toggle-paid" data-bill-id="' + b.id + '"><div class="icon-dot' + (b.status === 'paid' ? ' paid' : ' unpaid') + '"></div></button><button class="icon-btn edit-bill" data-bill-id="' + b.id + '"><div class="icon-edit"></div></button><button class="icon-btn del-bill" data-bill-id="' + b.id + '"><div class="icon-del"></div></button></div></div>';
+    }
+    if (bankBills.length === 0) { billsHtml += '<div class="empty-bank-hint">暂无缴款事项</div>'; }
+    billsHtml += '<div class="add-bill-btn" data-bank-id="' + bank.id + '">＋ 添加缴款事项</div>';
+
+    el.innerHTML = '<div class="bank-header">' +
+      '<div class="bank-header-main">' +
+        '<span class="bank-icon">🏦</span>' +
+        '<div class="bank-header-info">' +
+          '<div class="bank-name-row"><span class="bank-name">' + escapeHtml(bank.name) + '</span><span class="bank-total">¥ ' + bankTotal.toFixed(2) + '</span></div>' +
+          '<div class="bank-status-stats">' + statusStatsHtml + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="bank-header-actions">' +
+        '<button class="icon-btn bank-del" style="width:26px;height:26px;"><div class="icon-del" style="width:10px;height:10px;position:relative;"></div></button>' +
+        '<span class="collapse-arrow">▼</span>' +
+      '</div>' +
+    '</div>' +
+    '<div class="bank-body"><div class="bank-items">' + billsHtml + '</div></div>';
+
+    (function(bankId, bankName) {
+      el.querySelector('.bank-header').onclick = function(e) { if (e.target.closest('.bank-del')) return; expandedBanks[bankId] = !expandedBanks[bankId]; render(); };
+      el.querySelector('.bank-del').onclick = function(e) { e.stopPropagation(); showModal('确定删除「' + bankName + '」及其所有事项吗？', { icon: '🗑️', confirmText: '删除', cancelText: '取消' }).then(function(ok) { if (!ok) return; var nb = [], nbl = []; for (var i = 0; i < data.banks.length; i++) { if (data.banks[i].id !== bankId) nb.push(data.banks[i]); } data.banks = nb; for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].bankId !== bankId) nbl.push(data.bills[i]); } data.bills = nbl; delete expandedBanks[bankId]; saveData(); showToast('已删除'); render(); }); };
+      el.querySelector('.add-bill-btn').onclick = function() { editingBillId = null; billNameInput.value = ''; billAmountInput.value = ''; setStatusValue('unpaid'); openBillForm(bankId); };
+      var tgl = el.querySelectorAll('.toggle-paid'); for (var t = 0; t < tgl.length; t++) { tgl[t].onclick = function(e) { e.stopPropagation(); var bid = parseInt(this.dataset.billId); for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id === bid) { data.bills[i].status = data.bills[i].status === 'paid' ? 'unpaid' : 'paid'; break; } } saveData(); render(); }; }
+      var edt = el.querySelectorAll('.edit-bill'); for (var e2 = 0; e2 < edt.length; e2++) { edt[e2].onclick = function(e) { e.stopPropagation(); var bid = parseInt(this.dataset.billId); var bl = null; for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id === bid) { bl = data.bills[i]; break; } } if (!bl) return; editingBillId = bid; billNameInput.value = bl.name; billAmountInput.value = bl.amount; setStatusValue(bl.status || 'unpaid'); openBillForm(bl.bankId); }; }
+      var dlt = el.querySelectorAll('.del-bill'); for (var d = 0; d < dlt.length; d++) { dlt[d].onclick = function(e) { e.stopPropagation(); var bid = parseInt(this.dataset.billId); var bl = null; for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id === bid) { bl = data.bills[i]; break; } } if (!bl) return; showModal('确定删除「' + bl.name + '」吗？', { icon: '🗑️', confirmText: '删除', cancelText: '取消' }).then(function(ok) { if (!ok) return; var nbl = []; for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id !== bid) nbl.push(data.bills[i]); } data.bills = nbl; saveData(); showToast('已删除'); render(); }); }; }
+    })(bank.id, bank.name);
+
+    listEl.appendChild(el);
+  }
+}
+
+function updateSummary() {
+  var now = new Date();
+  var currentMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+  var unpaidTotal = 0, paidTotal = 0, unpaidCount = 0, paidCount = 0;
+  for (var i = 0; i < data.bills.length; i++) {
+    if (data.bills[i].date && data.bills[i].date.indexOf(currentMonth) === 0) {
+      if (data.bills[i].status === 'unpaid') { unpaidTotal += parseFloat(data.bills[i].amount) || 0; unpaidCount++; }
+      else { paidTotal += parseFloat(data.bills[i].amount) || 0; paidCount++; }
+    }
+  }
+  document.getElementById('unpaidAmount').textContent = '¥ ' + unpaidTotal.toFixed(2);
+  document.getElementById('unpaidCount').textContent = unpaidCount;
+  document.getElementById('paidAmount').textContent = '¥ ' + paidTotal.toFixed(2);
+  document.getElementById('paidCount').textContent = paidCount;
+}
+
+function escapeHtml(str) { if (!str) return ''; var d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+
+document.getElementById('addBankBtn').onclick = function() { editingBankId = null; bankNameInput.value = ''; openBankForm(); };
+document.getElementById('clearAllBtn').onclick = function() { showModal('确定清空所有数据吗？', { icon: '⚠️', confirmText: '清空', cancelText: '取消' }).then(function(ok) { if (!ok) return; data = { banks: [], bills: [] }; expandedBanks = {}; nextBankId = 1; nextBillId = 1; saveData(); showToast('已清空'); menuPanel.style.display = 'none'; render(); }); };
+document.getElementById('exportBtn').onclick = function() { var json = JSON.stringify(data, null, 2); var blob = new Blob([json], { type: 'application/json' }); var url = URL.createObjectURL(blob); var a = document.createElement('a'); a.href = url; a.download = 'monthly-bills-' + new Date().toISOString().split('T')[0] + '.json'; a.click(); URL.revokeObjectURL(url); showToast('导出成功'); menuPanel.style.display = 'none'; };
+var importFile = document.getElementById('importFile');
+document.getElementById('importBtn').onclick = function() { importFile.click(); menuPanel.style.display = 'none'; };
+importFile.onchange = function(e) { var file = e.target.files[0]; if (!file) return; var reader = new FileReader(); reader.onload = function(ev) { try { var nd = JSON.parse(ev.target.result); if (!nd.banks || !nd.bills) throw new Error('格式错误'); showModal('导入 ' + nd.banks.length + ' 银行 ' + nd.bills.length + ' 条记录？', { icon: '📥', confirmText: '导入', cancelText: '取消', confirmClass: 'primary-action' }).then(function(ok) { if (!ok) { importFile.value = ''; return; } data = nd; expandedBanks = {}; nextBankId = 1; nextBillId = 1; for (var i = 0; i < data.banks.length; i++) { if (data.banks[i].id >= nextBankId) nextBankId = data.banks[i].id + 1; expandedBanks[data.banks[i].id] = true; } for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id >= nextBillId) nextBillId = data.bills[i].id + 1; } saveData(); showToast('导入成功'); importFile.value = ''; render(); }); } catch(err) { showToast('导入失败'); importFile.value = ''; } }; reader.readAsText(file); };
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { if (modalOverlay.classList.contains('show')) { hideModal(false); return; } if (billFormOverlay.classList.contains('show')) { closeBillForm(); return; } if (bankFormOverlay.classList.contains('show')) { closeBankForm(); return; } } });
+
+loadData();
+for (var i = 0; i < data.banks.length; i++) { if (!(data.banks[i].id in expandedBanks)) expandedBanks[data.banks[i].id] = true; }
+render();
+</script>
+
+</body>
+</html>
