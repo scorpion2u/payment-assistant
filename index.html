@@ -15,7 +15,6 @@
   <link rel="apple-touch-icon" href="https://scorpion2u.github.io/payment-assistant/icon-192.png">
 
   <style>
-    /* 所有CSS样式保持不变，此处省略，请从原文件复制 */
     *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
     *:focus{outline:none;} *:focus-visible{outline:2px solid #999;outline-offset:2px;}
     body{
@@ -173,26 +172,56 @@
       pointer-events:none;z-index:400;
     }
     .toast.show{opacity:1;}
-    .install-btn {
-      display: inline-flex;
+
+    /* ===== 菜单弹窗样式 ===== */
+    .menu-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      display: flex;
       align-items: center;
-      gap: 4px;
-      background: #2c3e50;
+      justify-content: center;
+      z-index: 350;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .menu-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .menu-popup {
+      border-radius: 28px;
+      padding: 24px 20px 20px;
+      background: linear-gradient(145deg, #e8edf3, #d2d8e4);
+      box-shadow: 20px 20px 40px rgba(0,0,0,0.2), -12px -12px 30px rgba(255,255,255,0.9);
+      max-width: 320px;
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transform: scale(0.9);
+      transition: transform 0.3s;
+    }
+    .menu-overlay.show .menu-popup {
+      transform: scale(1);
+    }
+    .menu-popup .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 18px;
+      font-size: 0.95rem;
+      border-radius: 18px;
+    }
+    .menu-popup .btn.install-menu-btn {
+      background: linear-gradient(145deg, #2c3e50, #1a252f);
       color: #fff;
-      border: none;
-      border-radius: 16px;
-      padding: 6px 14px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 2px 2px 6px rgba(0,0,0,0.15);
-      transition: all 0.2s;
+      box-shadow: 6px 6px 12px rgba(0,0,0,0.2), -4px -4px 10px rgba(255,255,255,0.6);
     }
-    .install-btn:hover {
-      background: #3d566e;
-    }
-    .install-btn:active {
-      transform: scale(0.96);
+    .menu-popup .btn.install-menu-btn:active {
+      box-shadow: inset 4px 4px 8px rgba(0,0,0,0.3), inset -4px -4px 8px rgba(255,255,255,0.4);
     }
   </style>
 </head>
@@ -204,7 +233,6 @@
       <div class="app-title">每月缴款</div>
     </div>
     <div style="display:flex;gap:8px;">
-      <button class="btn primary install-btn" id="installAppBtn" title="安装应用" style="display:none;">📱</button>
       <button class="btn primary" id="addBankBtn" title="添加银行">＋</button>
       <button class="btn" id="menuBtn" title="菜单">☰</button>
     </div>
@@ -223,14 +251,18 @@
 
   <div id="list" class="list"></div>
 
-  <div id="menuPanel" style="display:none;margin-top:12px;">
-    <div style="padding:16px;border-radius:22px;background:linear-gradient(145deg,#e8edf3,#d2d8e4);display:flex;flex-direction:column;gap:12px;box-shadow:inset 4px 4px 8px rgba(0,0,0,0.08),inset -4px -4px 8px rgba(255,255,255,0.7);">
-      <button id="exportBtn" class="btn">📤 导出数据</button>
-      <button id="importBtn" class="btn">📥 导入数据</button>
-      <button id="clearAllBtn" class="btn" style="color:#c0392b;">🧹 清空所有数据</button>
+  <!-- 菜单弹窗（独立浮出） -->
+  <div class="menu-overlay" id="menuOverlay">
+    <div class="menu-popup">
+      <div class="form-title" style="margin-bottom:4px;">📋 菜单</div>
+      <button class="btn install-menu-btn" id="installAppBtn" style="display:none;">📱 安装应用</button>
+      <button class="btn" id="exportBtn">📤 导出数据</button>
+      <button class="btn" id="importBtn">📥 导入数据</button>
+      <button class="btn" id="clearAllBtn" style="color:#c0392b;">🧹 清空所有数据</button>
+      <button class="btn" id="menuCloseBtn" style="margin-top:4px;">关闭</button>
     </div>
-    <input type="file" id="importFile" accept=".json" style="display:none;">
   </div>
+  <input type="file" id="importFile" accept=".json" style="display:none;">
 
   <div class="form-overlay" id="bankFormOverlay">
     <div class="form-panel">
@@ -300,17 +332,17 @@ const installBtn = document.getElementById('installAppBtn');
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  installBtn.style.display = 'inline-flex'; // 显示安装按钮
-  
-  installBtn.addEventListener('click', async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log(`用户安装响应: ${outcome}`);
-      deferredPrompt = null;
-      installBtn.style.display = 'none';
-    }
-  });
+  installBtn.style.display = 'flex';
+});
+
+installBtn.addEventListener('click', async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`用户安装响应: ${outcome}`);
+    deferredPrompt = null;
+    installBtn.style.display = 'none';
+  }
 });
 
 window.addEventListener('appinstalled', () => {
@@ -319,12 +351,41 @@ window.addEventListener('appinstalled', () => {
   installBtn.style.display = 'none';
 });
 
-// 如果已经在独立模式运行，隐藏安装按钮
-if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
-  installBtn.style.display = 'none';
-}
+// ========== 菜单弹窗控制 ==========
+var menuOverlay = document.getElementById('menuOverlay');
+var menuBtn = document.getElementById('menuBtn');
+var menuCloseBtn = document.getElementById('menuCloseBtn');
 
-// ========== 应用核心逻辑 (保持不变) ==========
+menuBtn.onclick = function(e) {
+  e.stopPropagation();
+  menuOverlay.classList.add('show');
+};
+
+menuCloseBtn.onclick = function() {
+  menuOverlay.classList.remove('show');
+};
+
+menuOverlay.addEventListener('click', function(e) {
+  if (e.target === menuOverlay) {
+    menuOverlay.classList.remove('show');
+  }
+});
+
+// 菜单内按钮点击后自动关闭弹窗
+document.getElementById('exportBtn').onclick = function() {
+  menuOverlay.classList.remove('show');
+  // 导出逻辑在下面
+};
+document.getElementById('importBtn').onclick = function() {
+  menuOverlay.classList.remove('show');
+  // 导入逻辑在下面
+};
+document.getElementById('clearAllBtn').onclick = function() {
+  menuOverlay.classList.remove('show');
+  // 清空逻辑在下面
+};
+
+// ========== 应用核心逻辑 ==========
 var STORAGE_KEY = 'monthly_bank_data';
 var data = { banks: [], bills: [] };
 var nextBankId = 1;
@@ -337,8 +398,6 @@ var expandedBanks = {};
 
 var listEl = document.getElementById('list');
 var toast = document.getElementById('toast');
-var menuBtn = document.getElementById('menuBtn');
-var menuPanel = document.getElementById('menuPanel');
 var bankFormOverlay = document.getElementById('bankFormOverlay');
 var bankNameInput = document.getElementById('bankNameInput');
 var bankSaveBtn = document.getElementById('bankSaveBtn');
@@ -417,9 +476,6 @@ function setStatusValue(value) {
   currentBillStatus = value;
   for (var i = 0; i < statusOptions.length; i++) { statusOptions[i].classList.remove('selected'); if (statusOptions[i].dataset.value === value) { statusOptions[i].classList.add('selected'); statusSelectText.textContent = statusOptions[i].textContent; } }
 }
-
-menuBtn.onclick = function(e) { e.stopPropagation(); menuPanel.style.display = menuPanel.style.display === 'none' ? 'block' : 'none'; };
-document.addEventListener('click', function(e) { if (!menuPanel.contains(e.target) && !menuBtn.contains(e.target)) { menuPanel.style.display = 'none'; } });
 
 function openBankForm() { bankFormOverlay.classList.add('show'); setTimeout(function() { bankNameInput.focus(); }, 150); }
 function closeBankForm() { bankFormOverlay.classList.remove('show'); editingBankId = null; }
@@ -552,12 +608,57 @@ function updateSummary() {
 function escapeHtml(str) { if (!str) return ''; var d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
 
 document.getElementById('addBankBtn').onclick = function() { editingBankId = null; bankNameInput.value = ''; openBankForm(); };
-document.getElementById('clearAllBtn').onclick = function() { showModal('确定清空所有数据吗？', { icon: '⚠️', confirmText: '清空', cancelText: '取消' }).then(function(ok) { if (!ok) return; data = { banks: [], bills: [] }; expandedBanks = {}; nextBankId = 1; nextBillId = 1; saveData(); showToast('已清空'); menuPanel.style.display = 'none'; render(); }); };
-document.getElementById('exportBtn').onclick = function() { var json = JSON.stringify(data, null, 2); var blob = new Blob([json], { type: 'application/json' }); var url = URL.createObjectURL(blob); var a = document.createElement('a'); a.href = url; a.download = 'monthly-bills-' + new Date().toISOString().split('T')[0] + '.json'; a.click(); URL.revokeObjectURL(url); showToast('导出成功'); menuPanel.style.display = 'none'; };
+
+// 清空数据
+document.getElementById('clearAllBtn').onclick = function() {
+  showModal('确定清空所有数据吗？', { icon: '⚠️', confirmText: '清空', cancelText: '取消' }).then(function(ok) {
+    if (!ok) return;
+    data = { banks: [], bills: [] }; expandedBanks = {}; nextBankId = 1; nextBillId = 1;
+    saveData(); showToast('已清空'); render();
+  });
+};
+
+// 导出数据
+document.getElementById('exportBtn').onclick = function() {
+  var json = JSON.stringify(data, null, 2);
+  var blob = new Blob([json], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'monthly-bills-' + new Date().toISOString().split('T')[0] + '.json';
+  a.click(); URL.revokeObjectURL(url);
+  showToast('导出成功');
+};
+
+// 导入数据
 var importFile = document.getElementById('importFile');
-document.getElementById('importBtn').onclick = function() { importFile.click(); menuPanel.style.display = 'none'; };
-importFile.onchange = function(e) { var file = e.target.files[0]; if (!file) return; var reader = new FileReader(); reader.onload = function(ev) { try { var nd = JSON.parse(ev.target.result); if (!nd.banks || !nd.bills) throw new Error('格式错误'); showModal('导入 ' + nd.banks.length + ' 银行 ' + nd.bills.length + ' 条记录？', { icon: '📥', confirmText: '导入', cancelText: '取消', confirmClass: 'primary-action' }).then(function(ok) { if (!ok) { importFile.value = ''; return; } data = nd; expandedBanks = {}; nextBankId = 1; nextBillId = 1; for (var i = 0; i < data.banks.length; i++) { if (data.banks[i].id >= nextBankId) nextBankId = data.banks[i].id + 1; expandedBanks[data.banks[i].id] = true; } for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id >= nextBillId) nextBillId = data.bills[i].id + 1; } saveData(); showToast('导入成功'); importFile.value = ''; render(); }); } catch(err) { showToast('导入失败'); importFile.value = ''; } }; reader.readAsText(file); };
-document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { if (modalOverlay.classList.contains('show')) { hideModal(false); return; } if (billFormOverlay.classList.contains('show')) { closeBillForm(); return; } if (bankFormOverlay.classList.contains('show')) { closeBankForm(); return; } } });
+document.getElementById('importBtn').onclick = function() { importFile.click(); };
+importFile.onchange = function(e) {
+  var file = e.target.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      var nd = JSON.parse(ev.target.result);
+      if (!nd.banks || !nd.bills) throw new Error('格式错误');
+      showModal('导入 ' + nd.banks.length + ' 银行 ' + nd.bills.length + ' 条记录？', { icon: '📥', confirmText: '导入', cancelText: '取消', confirmClass: 'primary-action' }).then(function(ok) {
+        if (!ok) { importFile.value = ''; return; }
+        data = nd; expandedBanks = {}; nextBankId = 1; nextBillId = 1;
+        for (var i = 0; i < data.banks.length; i++) { if (data.banks[i].id >= nextBankId) nextBankId = data.banks[i].id + 1; expandedBanks[data.banks[i].id] = true; }
+        for (var i = 0; i < data.bills.length; i++) { if (data.bills[i].id >= nextBillId) nextBillId = data.bills[i].id + 1; }
+        saveData(); showToast('导入成功'); importFile.value = ''; render();
+      });
+    } catch(err) { showToast('导入失败'); importFile.value = ''; }
+  };
+  reader.readAsText(file);
+};
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    if (modalOverlay.classList.contains('show')) { hideModal(false); return; }
+    if (billFormOverlay.classList.contains('show')) { closeBillForm(); return; }
+    if (bankFormOverlay.classList.contains('show')) { closeBankForm(); return; }
+    if (menuOverlay.classList.contains('show')) { menuOverlay.classList.remove('show'); return; }
+  }
+});
 
 loadData();
 for (var i = 0; i < data.banks.length; i++) { if (!(data.banks[i].id in expandedBanks)) expandedBanks[data.banks[i].id] = true; }
